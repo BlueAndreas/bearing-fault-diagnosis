@@ -1,0 +1,20 @@
+{
+  "dataset": "data/processed/dataset/dataset.npz",
+  "cnn_folder": "outputs/cnn",
+  "baseline_model": "outputs/baseline/baseline-model.joblib",
+  "labels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "sampling_rate_hz": 12000,
+  "window_points": 1024,
+  "batch_size": 32,
+  "device": "cpu",
+  "torch_threads": 2,
+  "evaluation_split": "test",
+  "prediction_rule": "saved CNN logits argmax; saved SVM pipeline.predict; no tuning",
+  "zero_division": 0,
+  "known_test_reuse": "The same 3 HP split was already evaluated for the baseline evaluation. This is a frozen-model comparison, not a fresh independent dataset."
+}

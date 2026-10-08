@@ -1,4 +1,4 @@
-"""第九课本地 HTTP 服务：python -X utf8 app/server.py [--open-browser]。"""
+"""本地诊断 HTTP 服务：python -X utf8 app/server.py [--open-browser]。"""
 from pathlib import Path
 import argparse
 import json
@@ -97,7 +97,7 @@ def main():
     try:
         with urlopen(url+'/api/catalog',timeout=1) as r:
             old=json.load(r)
-        if old.get('app')=='bearing-lesson09' and old.get('project_identity')==digest(str(ROOT).encode()):
+        if old.get('app')=='bearing-fault-diagnosis' and old.get('project_identity')==digest(str(ROOT).encode()):
             print('这个项目的界面已经运行：',url,flush=True)
             if opt.open_browser:
                 webbrowser.open(url)
@@ -111,7 +111,7 @@ def main():
         raise SystemExit(f'端口 {opt.port} 已被其他程序占用。可使用 --port 8880 启动。') from e
     server.service=service
     print('模型已加载，访问：',url,flush=True)
-    print('保留此启动窗口；结束时按 Ctrl+C。仅监听本机，分析结果保存在 outputs/lesson09/runs。',flush=True)
+    print('保留此启动窗口；结束时按 Ctrl+C。仅监听本机，分析结果保存在 outputs/diagnosis/runs。',flush=True)
     if opt.open_browser:
         webbrowser.open(url)
     try:

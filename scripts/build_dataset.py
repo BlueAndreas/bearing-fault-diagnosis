@@ -1,8 +1,8 @@
-"""第三课：按原始记录/负载分组，再切片，最后仅用训练数据拟合标准化参数。
+"""数据构建阶段：按原始记录/负载分组，再切片，最后仅用训练数据拟合标准化参数。
 
-运行：python -X utf8 scripts/lesson03_build_dataset.py
-练习：python -X utf8 scripts/lesson03_build_dataset.py --window-points 2048
-仅生成数据集与检查报告，不训练模型；不修改 MAT 或前两课输出。
+运行：python -X utf8 scripts/build_dataset.py
+指定窗口长度：python -X utf8 scripts/build_dataset.py --window-points 2048
+仅生成数据集与检查报告，不训练模型；不修改 MAT 或已有输出。
 """
 from pathlib import Path
 from math import gcd
@@ -31,7 +31,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--window-points',type=int)
     args = parser.parse_args()
-    config_path = ROOT/'configs/lesson03_dataset.json'
+    config_path = ROOT/'configs/dataset.json'
     cfg = json.loads(config_path.read_text(encoding='utf-8'))
     fs = cfg['sampling_rate_hz']
     win = args.window_points or cfg['window_points']
@@ -42,7 +42,7 @@ def main():
     if win < 2 or win > count:
         raise ValueError('窗口长度需为 2～48000 点。')
     cfg['window_points'] = win
-    cfg['stride_points'] = win  # 不重叠；本课不使用重叠窗口。
+    cfg['stride_points'] = win  # 不重叠；本程序不使用重叠窗口。
     chunks = {s:[] for s in SPLITS}
     labels = {s:[] for s in SPLITS}
     origins = {s:[] for s in SPLITS}
@@ -61,7 +61,7 @@ def main():
             paths = [raw_folder/cls[key].format(**fmt) for key in ['file_pattern','fallback_pattern']]
             path = next((p for p in paths if p.is_file()),None)
             if path is None:
-                raise FileNotFoundError(f'缺少记录 {record_id}；请先运行 scripts/prepare_lesson03_data.py。')
+                raise FileNotFoundError(f'缺少记录 {record_id}；请先运行 scripts/download_data.py。')
             mat = loadmat(path)
             # 显式选择记录号。99.mat/1750 rpm.mat 中可能同时含 98 和 99，不能选第一个 DE。
             key = f'X{record_id:03d}_DE_time'
@@ -143,8 +143,8 @@ def main():
     if not all(np.isfinite(v).all() for v in arrays.values()):
         raise AssertionError('生成数组存在非有限值。')
 
-    processed = ROOT/'data/processed/lesson03'
-    out = ROOT/'outputs/lesson03'
+    processed = ROOT/'data/processed/dataset'
+    out = ROOT/'outputs/dataset'
     if win!=1024:
         processed = processed/f'window-{win}'
         out = out/f'window-{win}'
@@ -212,7 +212,7 @@ def main():
     shape_table='\n'.join(f"| {TITLES[s]} | `{tuple(arrays[f'X_{s}'].shape)}` | `{tuple(arrays[f'y_{s}'].shape)}` | {', '.join(map(str,sorted(groups[s])))} |" for s in SPLITS)
     image_block='\n\n'.join(f'![{title}]({(out/name).as_posix()})' for name,title in [
         ('01-record-split.png','原始记录分组图'),('02-class-counts.png','类别样本数量'),('03-normalization.png','共享训练参数的标准化示例')])
-    report=f'''# 第三课：数据集构建结果
+    report=f'''# 数据构建阶段：数据集构建结果
 
 脚本已生成数组、标签、窗口索引和标准化参数；尚未训练分类模型，因此没有诊断准确率。
 
@@ -260,7 +260,7 @@ def main():
 - 标签：[label-map.json]({(processed/'label-map.json').as_posix()})。
 - 固定配置：[build-config.json]({(processed/'build-config.json').as_posix()})。
 
-`X_train_raw / X_val_raw / X_test_raw` 保留未标准化窗口，供下一课计算 RMS 等特征；`X_train / X_val / X_test` 使用共享标准化，供后续建模。X 为 float32，y/记录号/负载为 int64。原始 MAT 不修改。
+`X_train_raw / X_val_raw / X_test_raw` 保留未标准化窗口，供后续建模阶段计算 RMS 等特征；`X_train / X_val / X_test` 使用共享标准化，供后续建模。X 为 float32，y/记录号/负载为 int64。原始 MAT 不修改。
 
 ## 6. 当前能说明什么
 
@@ -268,7 +268,7 @@ def main():
 
 来源：[CWRU 故障表]({cfg['fault_reference']})、[正常表]({cfg['normal_reference']})、[正常采样率参考：Smith & Randall 表 A1]({cfg['normal_rate_reference']})。
 '''
-    (out/'第三课-数据集构建结果.md').write_text(report,encoding='utf-8')
+    (out/'dataset-report.md').write_text(report,encoding='utf-8')
     for s in SPLITS:
         print(TITLES[s],f"X={arrays[f'X_{s}'].shape}, y={arrays[f'y_{s}'].shape}",f'每类={list(per_class[s].values())}')
     print('第一个训练样本：X_train[0] 是一段窗口，y_train[0]=',int(arrays['y_train'][0]),'（正常）')

@@ -8,4 +8,4 @@
 
 NumPy、SciPy、scikit-learn、PyTorch、matplotlib、joblib、requests 等依赖分别适用其自身协议，依赖安装包未随本仓库重新分发。
 
-`reports/reference/` 和 `docs/images/` 来自本地已运行的学习工程，保留实验数值与结果图。引用结果时应同时说明记录划分、负载、窗口数量和验证范围。
+`reports/reference/` 和 `docs/images/` 保留实际运行的实验数值、结果图与诊断界面。引用结果时应同时说明记录划分、负载、窗口数量和验证范围。

@@ -1,7 +1,7 @@
-"""第八课：冻结模型、预设强度与种子、共同噪声输入，比较人工扰动表现。
+"""噪声评估阶段：冻结模型、预设强度与种子、共同噪声输入，比较人工扰动表现。
 
-python -X utf8 scripts/lesson08_noise_experiment.py
-不训练、去噪、拟合 scaler 或改动前七课文件。
+python -X utf8 scripts/evaluate_noise.py
+不训练、去噪、拟合 scaler 或改动已生成的数据和模型。
 """
 from pathlib import Path
 from datetime import datetime, timezone
@@ -20,12 +20,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'outputs/lesson08'
+OUT = ROOT / 'outputs/noise'
 sys.path.insert(0, str(ROOT / 'src'))
-from lesson06_cnn import load_saved_cnn, predict_raw_windows
-from lesson08_noise import make_unit_noise, add_noise_at_snr
-from lesson04_train_baseline import predict_windows
-from lesson07_evaluate import metrics, draw_matrix, sha256, write_json, write_csv
+from cnn import load_saved_cnn, predict_raw_windows
+from noise import make_unit_noise, add_noise_at_snr
+from train_baseline import predict_windows
+from evaluate import metrics, draw_matrix, sha256, write_json, write_csv
 
 
 def predict_pair(model, meta, bundle, raw, cfg):
@@ -119,7 +119,7 @@ def make_figures(cfg, names, raw, index, bank, summary, selected_noisy, audit):
 
 
 def main():
-    cfg_path = ROOT / 'configs/lesson08_noise.json'
+    cfg_path = ROOT / 'configs/noise.json'
     cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
     assert cfg['noise_split'] == 'test' and cfg['device'] == 'cpu'
     assert len(set(cfg['noise_seeds'])) == len(cfg['noise_seeds']) == 3
@@ -128,13 +128,13 @@ def main():
     dataset_path = ROOT / cfg['dataset']
     cnn_folder, svm_path = ROOT / cfg['cnn_folder'], ROOT / cfg['baseline_model']
     protected = [dataset_path, dataset_path.parent / 'normalization.json',
-                 cnn_folder / 'best-cnn.pt', cnn_folder / 'model-metadata.json', cnn_folder / 'lesson06-summary.json',
-                 svm_path, ROOT / 'outputs/lesson04/metrics.json', ROOT / 'outputs/lesson04/selection-frozen.json',
-                 ROOT / 'outputs/lesson07/metrics.json', ROOT / 'outputs/lesson07/test-output.npz']
+                 cnn_folder / 'best-cnn.pt', cnn_folder / 'model-metadata.json', cnn_folder / 'training-summary.json',
+                 svm_path, ROOT / 'outputs/baseline/metrics.json', ROOT / 'outputs/baseline/selection-frozen.json',
+                 ROOT / 'outputs/evaluation/metrics.json', ROOT / 'outputs/evaluation/test-output.npz']
     hashes = {p.as_posix(): sha256(p) for p in protected}
     model, meta = load_saved_cnn(cnn_folder)
     bundle = joblib.load(svm_path)
-    selection = json.loads((ROOT / 'outputs/lesson04/selection-frozen.json').read_text(encoding='utf-8'))
+    selection = json.loads((ROOT / 'outputs/baseline/selection-frozen.json').read_text(encoding='utf-8'))
     names = meta['label_names']
     label_map = json.loads((dataset_path.parent / 'label-map.json').read_text(encoding='utf-8'))
     assert names == bundle['label_names'] == [label_map[str(c)] for c in cfg['labels']]
@@ -165,7 +165,7 @@ def main():
         assert int(row['sample_index_in_split']) == i and int(row['label']) == y[i]
         assert int(row['record_id']) == arrays['record_id_test'][i]
     original_logits, original_cnn, original_svm = predict_pair(model, meta, bundle, raw, cfg)
-    with np.load(ROOT / 'outputs/lesson07/test-output.npz', allow_pickle=False) as z:
+    with np.load(ROOT / 'outputs/evaluation/test-output.npz', allow_pickle=False) as z:
         assert np.array_equal(z['cnn_prediction'], original_cnn) and np.array_equal(z['svm_prediction'], original_svm)
         np.testing.assert_allclose(z['logits'], original_logits, rtol=1e-6, atol=1e-7)
         assert np.array_equal(z['y_true'], y) and np.array_equal(z['record_id'], arrays['record_id_test'])
@@ -248,7 +248,7 @@ def main():
               'unique_original_test_windows': len(y), 'original_test_records': len(groups['test']),
               'training_performed': False, 'new_independent_data': False,
               'checks': {'frozen_before_predictions': True, 'same_noisy_input_for_both_models': True,
-                         'per_window_snr_verified': True, 'original_predictions_match_lesson07': True,
+                         'per_window_snr_verified': True, 'original_predictions_match_clean_evaluation': True,
                          'cnn_weights_unchanged': True, 'previous_artifacts_unchanged': True,
                          'train_val_test_record_groups_disjoint': True},
               'versions': {'python': platform.python_version(), 'numpy': np.__version__, 'torch': torch.__version__,
@@ -275,9 +275,9 @@ def main():
         description = '；'.join(f'{names[a]} → {names[b]}：{count} 个' for count,a,b in pairs[:3]) or '没有误判'
         error_pairs.append(f'- {name}：{description}。')
     errors_note = '\n'.join(error_pairs)
-    report = f'''# 第八课：人工噪声实验与负载数据审视结果
+    report = f'''# 噪声评估阶段：人工噪声实验与负载数据审视结果
 
-由实际运行生成。仅使用冻结模型；本课没有训练、去噪或重新拟合 scaler，没有新增独立设备数据。
+由实际运行生成。仅使用冻结模型；本程序没有训练、去噪或重新拟合 scaler，没有新增独立设备数据。
 
 ## 1. 预先固定的实验条件
 
@@ -333,17 +333,17 @@ def main():
 - [sample-audit.csv]({(OUT / 'sample-audit.csv').as_posix()})：详细案例图中的观察窗口。
 - [clean-load-audit.csv]({(OUT / 'clean-load-audit.csv').as_posix()})：按负载和既有角色记录的原始窗口成绩。
 
-保存的 noise-bank.npz 记录三个种子的单位 RMS 模板；trial-output.npz 按 trials 的 trial_id 保存全部预测；detailed-case.npz 保存详细案例加噪窗口和实际噪声。已检查原始条件预测与第七课一致，模型参数及前课文件未改变、逐窗 SNR 达标。
+保存的 noise-bank.npz 记录三个种子的单位 RMS 模板；trial-output.npz 按 trials 的 trial_id 保存全部预测；detailed-case.npz 保存详细案例加噪窗口和实际噪声。已检查原始条件预测与测试评估阶段一致，模型参数及既有实验文件未改变、逐窗 SNR 达标。
 
 ## 6. 当前结论的范围
 
 只对这套 CWRU 窗口、逐窗相对功率定标的随机噪声与三个预定种子作结论。原窗口已经带有采集背景，模拟噪声不是实际电机噪声；逐窗按相同 SNR 定标使不同幅值窗口的绝对噪声强度不同。有限窗口的高斯抽样再定标，也不同于未经约束的独立高斯过程。
 
-当前未据结果调参或宣称抗噪能力提高，没有固定绝对噪声、色噪声、冲击干扰、新轴承／新设备、噪声增强训练或滤波改进实验。重复噪声抽样不提供独立设备泛化证据。第九课将把已验证的数据处理与模型加载做成演示界面，展示输入要求和结果来源。
+当前未据结果调参或宣称抗噪能力提高，没有固定绝对噪声、色噪声、冲击干扰、新轴承／新设备、噪声增强训练或滤波改进实验。重复噪声抽样不提供独立设备泛化证据。诊断界面将把已验证的数据处理与模型加载做成演示界面，展示输入要求和结果来源。
 '''
-    (OUT / '第八课-噪声实验与负载审视结果.md').write_text(report, encoding='utf-8')
-    print('检查通过：逐窗 SNR、共同噪声输入、原始预测一致、权重与前课文件未改变。', flush=True)
-    print('报告：', OUT / '第八课-噪声实验与负载审视结果.md', flush=True)
+    (OUT / 'noise-report.md').write_text(report, encoding='utf-8')
+    print('检查通过：逐窗 SNR、共同噪声输入、原始预测一致、权重与既有实验文件未改变。', flush=True)
+    print('报告：', OUT / 'noise-report.md', flush=True)
 
 
 if __name__ == '__main__':

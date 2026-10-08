@@ -1,5 +1,5 @@
 {
-  "dataset": "data/processed/lesson03/dataset.npz",
+  "dataset": "data/processed/dataset/dataset.npz",
   "window_points": 1024,
   "sampling_rate_hz": 12000,
   "architecture": {"channels": [16, 32], "kernels": [9, 5]},
@@ -13,5 +13,5 @@
   "num_workers": 0,
   "drop_last": false,
   "checkpoint_selection": "highest validation macro-F1; then lowest validation loss; then earliest epoch",
-  "test_evaluation": "deferred to lesson07; do not load test arrays in lesson06"
+  "test_evaluation": "deferred to evaluation; do not load test arrays during training"
 }

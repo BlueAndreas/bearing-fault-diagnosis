@@ -219,16 +219,16 @@
   ],
   "cnn_selected_epoch": 30,
   "model_hashes": {
-    "data/processed/lesson03/dataset.npz": "d63f6e4f3e94673626d77ba4037e96e576ba8e8b60a18920cac4fe5b0a8a17a1",
-    "outputs/lesson06/best-cnn.pt": "2e9ba090556c18be554f075bfabd789ff6ba017fd693e8b77c89dec3df8d5d93",
-    "outputs/lesson06/model-metadata.json": "3fdb5047b7911158be418a950bac1965276ab0c571d565b72168f7097adc5adc",
-    "outputs/lesson06/lesson06-summary.json": "fb729dad56da4960c6d015b4edc1c2bbeb03af791cb489a1cfe2ea266fa03ba0",
-    "outputs/lesson04/baseline-model.joblib": "841d1193adee82d71d5ed6e9b6b4dd1500dc8d300d9111057d69c89d7a747d8d",
-    "outputs/lesson04/metrics.json": "a5dcab7e53898b12c04b07fd7f66efd5feb40cc3c05dacf324127ab36827415f",
-    "outputs/lesson04/selection-frozen.json": "634d3dc6c6324d46a6df826582edc3cba249ada4da75f891446049dccbe058f9"
+    "data/processed/dataset/dataset.npz": "d63f6e4f3e94673626d77ba4037e96e576ba8e8b60a18920cac4fe5b0a8a17a1",
+    "outputs/cnn/best-cnn.pt": "2e9ba090556c18be554f075bfabd789ff6ba017fd693e8b77c89dec3df8d5d93",
+    "outputs/cnn/model-metadata.json": "fec78de4b12ba86aac26fcfaa75d81012fc32c2d0a322192746037ba0607aa78",
+    "outputs/cnn/training-summary.json": "4703e184f0b9c3051f5a139039902dc71ed45ad5b68e06f99517f298426ab1b4",
+    "outputs/baseline/baseline-model.joblib": "8d375a61b3610df54d61498041553fd37c8d9abafcb533182eb752c396fb4bcb",
+    "outputs/baseline/metrics.json": "a5dcab7e53898b12c04b07fd7f66efd5feb40cc3c05dacf324127ab36827415f",
+    "outputs/baseline/selection-frozen.json": "ff37f7be24bc6e2bcd66a4061ae96fb545ea4e3db6bcf883fa60a90817c34e6f"
   },
   "cnn_test_evaluation_done": true,
-  "test_split_already_used_in_lesson04": true,
+  "test_split_previously_evaluated_for_baseline": true,
   "evaluation_scope": "CWRU 0/1 HP train, 2 HP validation, 3 HP test; four records, window-level metrics; not unseen bearing/device validation",
   "checks": {
     "frozen_before_prediction": true,
@@ -237,7 +237,7 @@
     "record_groups_disjoint": true,
     "same_test_windows_for_both_models": true,
     "saved_preprocessing_consistent": true,
-    "svm_predictions_match_lesson04": true,
+    "svm_predictions_match_baseline": true,
     "counts_match_confusion_matrices": true
   },
   "versions": {

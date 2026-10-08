@@ -1,8 +1,8 @@
-"""第六课：固定小型 CNN 配置，完整训练，按验证集选择权重，保存加载。
+"""CNN 训练阶段：固定小型 CNN 配置，完整训练，按验证集选择权重，保存加载。
 
-默认：python -X utf8 scripts/lesson06_train_cnn.py
+默认：python -X utf8 scripts/train_cnn.py
 只加载预测示例：加 --predict-example
-本课不加载测试数组，不计算 CNN 测试分数，留给第七课。
+本程序不加载测试数组，不计算 CNN 测试分数，留给测试评估阶段。
 """
 from pathlib import Path
 import argparse
@@ -27,9 +27,9 @@ from matplotlib.patches import FancyBboxPatch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
-from lesson06_cnn import SmallCNN1D, load_saved_cnn, predict_raw_windows
+from cnn import SmallCNN1D, load_saved_cnn, predict_raw_windows
 
-OUT = ROOT / 'outputs/lesson06'
+OUT = ROOT / 'outputs/cnn'
 LABELS = [0, 1, 2, 3]
 
 
@@ -72,26 +72,6 @@ def evaluate(model, loader):
 def make_figures(history, best_epoch, shapes):
     plt.rcParams.update({'font.sans-serif': ['Microsoft YaHei', 'SimHei', 'DejaVu Sans'],
                          'axes.unicode_minus': False, 'font.size': 12})
-    fig, ax = plt.subplots(figsize=(12, 6), constrained_layout=True)
-    ax.axis('off')
-    ax.set(xlim=(0, 12), ylim=(0, 6))
-    ax.text(6, 5.65, '卷积：一个小窗口沿时间移动，每次算一个加权和', ha='center', fontsize=18)
-    ax.text(6, 4.95, '教学数字：输入 [1, 2, 4, 1, 0]；权重 [1, 0, -1]；步长 1、无填充、偏置 0', ha='center')
-    cases = [('[1, 2, 4]', '1×1 + 2×0 + 4×(-1)', '-3'),
-             ('[2, 4, 1]', '2×1 + 4×0 + 1×(-1)', '1'),
-             ('[4, 1, 0]', '4×1 + 1×0 + 0×(-1)', '4')]
-    for i, (window, calculation, output) in enumerate(cases):
-        left = .2 + i * 4
-        ax.add_patch(FancyBboxPatch((left, 1.9), 3.6, 2.3, boxstyle='round,pad=.08',
-                                   facecolor=['#337EBB', '#248D77', '#DBA032'][i], edgecolor='none'))
-        ax.text(left + 1.8, 3.68, f'第 {i + 1} 个位置：{window}', ha='center', color='white', fontsize=14)
-        ax.text(left + 1.8, 2.95, calculation, ha='center', color='white', fontsize=12)
-        ax.text(left + 1.8, 2.25, f'输出 {output}', ha='center', color='white', fontsize=17)
-    ax.text(6, 1.1, '输出序列 [-3, 1, 4]；同一组权重在多个位置复用。', ha='center', fontsize=15)
-    ax.text(6, .45, '这组权重只用于演示；实际 CNN 的卷积权重由训练更新，不能直接解释为某种物理故障。', ha='center')
-    fig.savefig(OUT / '01-convolution-example.png', dpi=150)
-    plt.close(fig)
-
     fig, ax = plt.subplots(figsize=(13, 4.5), constrained_layout=True)
     ax.axis('off')
     ax.set(xlim=(0, 15), ylim=(0, 4))
@@ -106,7 +86,7 @@ def make_figures(history, best_epoch, shapes):
         if i < 4:
             ax.annotate('', xy=(left + 2.9, 2), xytext=(left + 2.65, 2),
                         arrowprops={'arrowstyle': '->', 'color': '#526579', 'lw': 2})
-    ax.text(7.5, 3.5, '本课 CNN 主线｜B 表示本批样本数', ha='center', fontsize=18)
+    ax.text(7.5, 3.5, '本程序 CNN 主线｜B 表示本批样本数', ha='center', fontsize=18)
     ax.text(7.5, .42, '16／32 是学出的特征通道，不是新的传感器；4 是输出类别数。', ha='center')
     fig.savefig(OUT / '02-cnn-architecture.png', dpi=150)
     plt.close(fig)
@@ -155,19 +135,19 @@ def main():
     if args.predict_example:
         prediction_example()
         return
-    config_path = ROOT / 'configs/lesson06_cnn.json'
+    config_path = ROOT / 'configs/cnn.json'
     cfg = json.loads(config_path.read_text(encoding='utf-8'))
     if cfg['device'] != 'cpu' or cfg['num_workers'] != 0 or cfg['drop_last']:
-        raise ValueError('第六课固定 CPU、主进程加载、保留最后一批。')
+        raise ValueError('CNN 训练阶段固定 CPU、主进程加载、保留最后一批。')
     if cfg['epochs'] < 1 or cfg['batch_size'] < 1 or cfg['learning_rate'] <= 0:
         raise ValueError('训练轮数、批次和学习率必须为正。')
     path = ROOT / cfg['dataset']
     if not path.is_file():
-        raise FileNotFoundError('缺少第三课默认数据，请先运行第三课。')
+        raise FileNotFoundError('缺少数据构建阶段默认数据，请先运行数据构建阶段。')
     source_hash = file_hash(path)
     arrays = {}
     with np.load(path, allow_pickle=False) as z:
-        for split in ['train', 'val']:  # 测试数组留到第七课。
+        for split in ['train', 'val']:  # 测试数组留到测试评估阶段。
             for key in ['X', 'y', 'record_id']:
                 arrays[f'{key}_{split}'] = z[f'{key}_{split}'].copy()
     for split in ['train', 'val']:
@@ -258,7 +238,7 @@ def main():
                 'selected_validation': {k: best[f'val_{k}'] for k in ['loss', 'accuracy', 'macro_f1']},
                 'parameter_count': parameter_count, 'versions': versions, 'test_evaluation_done': False,
                 'preprocessing': '12kHz unstandardized aligned window -> saved shared training mean/std -> (B,1,1024)',
-                'network_source': 'project teaching implementation; not upstream benchmark reproduction'}
+                'network_source': 'project prototype implementation; not upstream benchmark reproduction'}
     write_json(OUT / 'model-metadata.json', metadata)
     # 从磁盘重新构建网络，核对全部验证分数，而非仅看一个预测标签。
     loaded, saved_meta = load_saved_cnn(OUT)
@@ -273,7 +253,7 @@ def main():
     if not np.allclose(raw_prediction['logits'], loaded_logits, rtol=1e-5, atol=1e-6):
         raise AssertionError('原始窗口预处理后的推理与验证装载不一致。')
     if file_hash(path) != source_hash:
-        raise AssertionError('第三课数据被修改。')
+        raise AssertionError('数据构建阶段数据被修改。')
     np.savez_compressed(OUT / 'validation-output.npz', logits=loaded_logits, prediction=loaded_prediction,
                         y_true=arrays['y_val'], record_id=arrays['record_id_val'])
     with (OUT / 'validation-predictions.csv').open('w', encoding='utf-8-sig', newline='') as f:
@@ -282,7 +262,7 @@ def main():
         for i, predicted in enumerate(loaded_prediction):
             true = int(arrays['y_val'][i])
             writer.writerow([i, int(arrays['record_id_val'][i]), true, names[true], int(predicted), names[int(predicted)]])
-    baseline_path = ROOT / 'outputs/lesson04/metrics.json'
+    baseline_path = ROOT / 'outputs/baseline/metrics.json'
     baseline = None
     if baseline_path.is_file():
         old = json.loads(baseline_path.read_text(encoding='utf-8'))
@@ -296,19 +276,19 @@ def main():
                          'gradients_finite': True, 'parameters_updated': True, 'selected_on_validation_only': True,
                          'saved_logits_match_validation': True, 'raw_window_inference_matches': True,
                          'source_dataset_unchanged': True}}
-    write_json(OUT / 'lesson06-summary.json', result)
+    write_json(OUT / 'training-summary.json', result)
     make_figures(history, best['epoch'], shapes)
     example = prediction_example()
     shape_table = '\n'.join(f"| {r['layer']} | `{tuple(r['shape'])}` |" for r in shapes)
     baseline_note = (f"| 统计特征 {baseline['name']} | {baseline['accuracy']:.4%} | {baseline['macro_f1']:.6f} |"
-                     if baseline else '| 第四课基线 | 尚未找到已有报告 | — |')
-    report = f'''# 第六课：一维 CNN 训练与验证结果
+                     if baseline else '| 基线训练阶段基线 | 尚未找到已有报告 | — |')
+    report = f'''# CNN 训练阶段：一维 CNN 训练与验证结果
 
-已完整训练 CNN，保存并重载最佳验证权重。**本课未评估 CNN 测试集，第七课再评估冻结模型。**
+已完整训练 CNN，保存并重载最佳验证权重。**本程序未评估 CNN 测试集，测试评估阶段再评估冻结模型。**
 
 ## 1. 本次配置与结果
 
-- 输入：第三课已共享标准化的振动序列，每窗 1024 点、12 kHz；训练 368，验证 184 个。
+- 输入：数据构建阶段已共享标准化的振动序列，每窗 1024 点、12 kHz；训练 368，验证 184 个。
 - 模型：两组 Conv1d + ReLU + MaxPool1d，再平均汇总、展平、四分类；没有 Dropout／BatchNorm。
 - 参数量：{parameter_count}；CPU，{cfg['epochs']} 轮，每轮 {len(train_loader)} 批，合计 {total_steps} 次更新。
 - Adam 学习率 {cfg['learning_rate']}，weight_decay={cfg['weight_decay']}，固定种子 {cfg['seed']}。
@@ -316,11 +296,9 @@ def main():
 - 选中 **第 {best['epoch']} 轮**：验证 Accuracy **{loaded_scores['accuracy']:.4%}**，Macro-F1 **{loaded_scores['macro_f1']:.6f}**，loss **{loaded_scores['loss']:.6f}**。
 - 本次训练循环耗时约 {elapsed:.2f} 秒，不包括 Python 导入和绘图；实际版本见 summary。
 
-这是一套预先固定的教学配置，没有声称架构或参数最优。它是本项目新建的教学实现，不是原参考仓库的复现结果。
+这是一套预先固定的实验配置，没有声称架构或参数最优。它是本项目新建的原型实现，不是原参考仓库的复现结果。
 
 ## 2. 卷积和网络形状
-
-![小窗口加权示例]({(OUT / '01-convolution-example.png').as_posix()})
 
 ![CNN 主线]({(OUT / '02-cnn-architecture.png').as_posix()})
 
@@ -351,7 +329,7 @@ def main():
 - [model-metadata.json]({(OUT / 'model-metadata.json').as_posix()})：网络结构、标签、采样率、窗口长度、训练标准化参数、来源与权重哈希。
 - [training-history.csv]({(OUT / 'training-history.csv').as_posix()})：每轮训练／验证指标与是否保存。
 - [validation-predictions.csv]({(OUT / 'validation-predictions.csv').as_posix()})：验证预测与记录号、窗口索引。
-- [lesson06-summary.json]({(OUT / 'lesson06-summary.json').as_posix()})：配置、版本、层形状与检查结果。
+- [training-summary.json]({(OUT / 'training-summary.json').as_posix()})：配置、版本、层形状与检查结果。
 
 已核对全部验证 logits 保存重载后保持一致，并核对从未标准化验证窗口应用保存的标准化规则后推理一致。没有重新拟合标准化参数。
 
@@ -361,12 +339,12 @@ def main():
 
 数据仍来自 CWRU 同一试验台，同一故障轴承可能跨负载使用。不同记录划分不是独立新轴承／新设备验证。当前 CNN 分数来自参与权重选择的验证集，不是独立测试成绩。
 
-第七课使用本课已冻结的模型，计算测试指标、混淆矩阵并分析误判。第四课已评估过同一测试划分，后续要如实说明复用条件，不能因反复查看该划分调参而把结果称为全新的独立验证。
+测试评估阶段使用本程序已冻结的模型，计算测试指标、混淆矩阵并分析误判。基线训练阶段已评估过同一测试划分，后续要如实说明复用条件，不能因反复查看该划分调参而把结果称为全新的独立验证。
 '''
-    (OUT / '第六课-CNN训练与验证结果.md').write_text(report, encoding='utf-8')
+    (OUT / 'training-report.md').write_text(report, encoding='utf-8')
     print('检查通过：完整训练、验证选权重、保存加载 logits 一致、原始窗口推理一致、输入未改。', flush=True)
     print('最佳轮数：', best['epoch'], '；验证结果：', loaded_scores, flush=True)
-    print('本课没有 CNN 测试成绩。报告：', OUT / '第六课-CNN训练与验证结果.md', flush=True)
+    print('本程序没有 CNN 测试成绩。报告：', OUT / 'training-report.md', flush=True)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
-"""第四课：原始窗口 -> 8 个统计特征 -> 验证选模型 -> 冻结后测试。
+"""基线训练阶段：原始窗口 -> 8 个统计特征 -> 验证选模型 -> 冻结后测试。
 
-运行：python -X utf8 scripts/lesson04_train_baseline.py
+运行：python -X utf8 scripts/train_baseline.py
 仅加载已保存模型作示例预测：加 --predict-example
-原始 MAT、第三课数据和个人学习记录不会被修改。
+原始 MAT 与已构建的数据集不会被修改。
 """
 from pathlib import Path
 import argparse
@@ -27,8 +27,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'outputs/lesson04'
-PROCESSED = ROOT / 'data/processed/lesson04'
+OUT = ROOT / 'outputs/baseline'
+PROCESSED = ROOT / 'data/processed/features'
 MODEL_PATH = OUT / 'baseline-model.joblib'
 FEATURE_NAMES = ['rms', 'std', 'absolute_peak', 'peak_to_peak', 'mean_absolute',
                  'crest_factor', 'skewness', 'pearson_kurtosis']
@@ -49,7 +49,7 @@ def extract_features(windows):
     """输入未标准化窗口，每行一个样本；输出顺序固定的 8 个特征。
 
     std 使用 ddof=0；偏度与 Pearson 峭度使用 bias=False。
-    本课拒绝常量窗口，避免未定义的峰值因子、偏度和峭度被静默填零。
+    本程序拒绝常量窗口，避免未定义的峰值因子、偏度和峭度被静默填零。
     """
     x = np.asarray(windows, dtype=np.float64)
     if x.ndim != 2 or x.shape[0] == 0 or x.shape[1] < 4 or not np.isfinite(x).all():
@@ -74,7 +74,7 @@ def make_model(candidate, seed):
         return Pipeline([('scaler', StandardScaler()),
                          ('classifier', SVC(**candidate['parameters'], random_state=seed))])
     if candidate['family'] == 'random_forest':
-        # 树按特征阈值分支，本课不为随机森林添加标准化。
+        # 树按特征阈值分支，本程序不为随机森林添加标准化。
         return Pipeline([('classifier', RandomForestClassifier(
             **candidate['parameters'], random_state=seed, n_jobs=1))])
     raise ValueError(f"未知模型类型：{candidate['family']}")
@@ -100,7 +100,7 @@ def predict_windows(bundle, windows, sampling_rate_hz):
 def load_inputs(cfg):
     path = ROOT / cfg['dataset']
     if not path.is_file():
-        raise FileNotFoundError('缺少第三课数据，请先运行“运行第三课.bat”。')
+        raise FileNotFoundError('缺少数据构建阶段数据，请先运行 scripts/build_dataset.py。')
     with np.load(path, allow_pickle=False) as z:
         arrays = {k: z[k].copy() for s in ['train', 'val', 'test']
                   for k in [f'X_{s}_raw', f'y_{s}', f'record_id_{s}', f'load_hp_{s}']}
@@ -110,7 +110,7 @@ def load_inputs(cfg):
     for s in ['train', 'val', 'test']:
         x, y = arrays[f'X_{s}_raw'], arrays[f'y_{s}']
         if x.ndim != 2 or x.shape[1] != cfg['window_points'] or len(x) != len(y):
-            raise ValueError(f'{s} 数组形状不符合第四课配置。')
+            raise ValueError(f'{s} 数组形状不符合基线训练阶段配置。')
         if set(np.unique(y).tolist()) != set(LABELS):
             raise ValueError(f'{s} 缺少四类标签。')
         if len(arrays[f'record_id_{s}']) != len(y) or len(arrays[f'load_hp_{s}']) != len(y):
@@ -120,18 +120,18 @@ def load_inputs(cfg):
         raise ValueError('发现跨集合的原始记录号。')
     build_cfg = json.loads((path.parent / 'build-config.json').read_text(encoding='utf-8'))
     if build_cfg['sampling_rate_hz'] != cfg['sampling_rate_hz']:
-        raise ValueError('第三课数据采样率与第四课配置不匹配。')
+        raise ValueError('数据构建阶段数据采样率与基线训练阶段配置不匹配。')
     return path, arrays, names
 
 
 def example_prediction(cfg):
     if not MODEL_PATH.is_file():
-        raise FileNotFoundError('请先运行第四课训练，生成 baseline-model.joblib。')
+        raise FileNotFoundError('请先运行基线训练阶段训练，生成 baseline-model.joblib。')
     _, arrays, names = load_inputs(cfg)
     bundle = joblib.load(MODEL_PATH)
     # 使用既有验证集演示加载与推理，不声称这是新设备数据。
     prediction = int(predict_windows(bundle, arrays['X_val_raw'][:1], cfg['sampling_rate_hz'])[0])
-    print('只加载本课保存的模型，不重新训练。')
+    print('只加载本程序保存的模型，不重新训练。')
     print('示例来自验证集第一个窗口，记录号：', int(arrays['record_id_val'][0]))
     print('预测：', names[prediction], '；已知标签：', names[int(arrays['y_val'][0])])
 
@@ -177,7 +177,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--predict-example', action='store_true')
     args = parser.parse_args()
-    cfg_path = ROOT / 'configs/lesson04_baseline.json'
+    cfg_path = ROOT / 'configs/baseline.json'
     cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
     if cfg['feature_names'] != FEATURE_NAMES:
         raise ValueError('配置的特征顺序与程序不一致。')
@@ -251,7 +251,7 @@ def main():
     if int(matrix.sum()) != total or int(matrix.trace()) != correct:
         raise AssertionError('混淆矩阵与正确数量不一致。')
     if sha256(path) != input_hash:
-        raise AssertionError('第三课输入文件发生改变。')
+        raise AssertionError('数据构建阶段输入文件发生改变。')
     with (OUT / 'test-predictions.csv').open('w', encoding='utf-8-sig', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['sample_index_in_split', 'record_id', 'load_hp', 'true_label', 'true_state',
@@ -287,21 +287,21 @@ def main():
         i = int(wrong_indices[0])
         wrong_note = (f"第一个错误样本的测试索引为 {i}，来自记录 {int(arrays['record_id_test'][i])}；"
                       f"实际为{names[int(arrays['y_test'][i])]}，预测为{names[int(test_prediction[i])]}。"
-                      '可用 test-predictions.csv 对照第三课 window-index.csv 追溯。')
+                      '可用 test-predictions.csv 对照数据构建阶段 window-index.csv 追溯。')
     else:
         wrong_note = '本次测试窗口没有误判。这个结果只对应当前小规模划分，不能推出所有设备或所有工况都能正确诊断。'
-    report = f'''# 第四课：统计特征分类基线运行结果
+    report = f'''# 基线训练阶段：统计特征分类基线运行结果
 
 本报告由实际运行生成。已训练分类器；模型输入是每个振动窗口的 8 个统计特征。
 
 ## 1. 本次流程
 
-- 沿用第三课默认数据：训练 368、验证 184、测试 184 个窗口，每窗 1024 点、12 kHz。
+- 沿用数据构建阶段默认数据：训练 368、验证 184、测试 184 个窗口，每窗 1024 点、12 kHz。
 - 使用 X_*_raw 提取 RMS、标准差、绝对峰值、峰峰值、平均绝对值、峰值因子、偏度、Pearson 峭度。
 - 训练输入从 `(368, 1024)` 变成 `(368, 8)`；标签不变。
 - SVM 的各列特征由训练特征拟合 StandardScaler；随机森林不缩放特征。
 - 4 个预设候选方案均只用训练集拟合，以验证 Macro-F1 选模型，再以验证 Accuracy 和固定顺序打破同分。
-- 同分优先不代表优先方案理论上更强。候选配置见 [lesson04_baseline.json]({cfg_path.as_posix()})。
+- 同分优先不代表优先方案理论上更强。候选配置见 [baseline.json]({cfg_path.as_posix()})。
 - 选中后不合并训练与验证重训，只评估选中模型的测试表现。
 
 ## 2. 验证比较：这里用于选方案
@@ -337,7 +337,7 @@ def main():
 - [test-predictions.csv]({(OUT / 'test-predictions.csv').as_posix()})：逐窗口真实标签与预测，包含记录号和索引。
 - [metrics.json]({(OUT / 'metrics.json').as_posix()})：完整指标、混淆矩阵、实际依赖版本和检查结果。
 
-已检查原始记录组不交叉、第三课数据哈希未改变、选中模型保存加载后验证预测一致，以及混淆矩阵与正确数一致。
+已检查原始记录组不交叉、数据构建阶段数据哈希未改变、选中模型保存加载后验证预测一致，以及混淆矩阵与正确数一致。
 
 ## 6. 结果范围
 
@@ -347,11 +347,11 @@ def main():
 
 实际版本：{json.dumps(versions, ensure_ascii=False)}。
 '''
-    (OUT / '第四课-基线运行结果.md').write_text(report, encoding='utf-8')
+    (OUT / 'baseline-report.md').write_text(report, encoding='utf-8')
     print('冻结方案：', candidate['name'])
     print(f"测试：正确 {correct}/{total}，Accuracy={metrics['accuracy']:.4%}，Macro-F1={metrics['macro_f1']:.6f}")
     print('检查通过：训练拟合、验证选择、冻结后测试、保存加载一致、输入数据未修改。')
-    print('结果报告：', OUT / '第四课-基线运行结果.md')
+    print('结果报告：', OUT / 'baseline-report.md')
 
 
 if __name__ == '__main__':

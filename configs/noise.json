@@ -1,7 +1,7 @@
 {
-  "dataset": "data/processed/lesson03/dataset.npz",
-  "cnn_folder": "outputs/lesson06",
-  "baseline_model": "outputs/lesson04/baseline-model.joblib",
+  "dataset": "data/processed/dataset/dataset.npz",
+  "cnn_folder": "outputs/cnn",
+  "baseline_model": "outputs/baseline/baseline-model.joblib",
   "labels": [0, 1, 2, 3],
   "sampling_rate_hz": 12000,
   "window_points": 1024,
@@ -19,5 +19,5 @@
   "detailed_case": {"snr_db": -5, "seed": 2026},
   "sample_audit_rule": "Within the fixed detailed case, first union-error per true class; if that class has no error, first correct window. Visualization only, no model selection.",
   "clean_load_audit": "0/1 HP are fitted training data, 2 HP is used validation, 3 HP is reused test; no leave-one-load-out retraining",
-  "known_reuse": "Same records as previous lessons; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
+  "known_reuse": "Same records as the clean evaluation; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
 }

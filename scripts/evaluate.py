@@ -1,7 +1,7 @@
-"""第七课：只加载冻结的 CNN／SVM，测试、指标解释与可追溯样本检查。
+"""测试评估阶段：只加载冻结的 CNN／SVM，测试、指标解释与可追溯样本检查。
 
-python -X utf8 scripts/lesson07_evaluate.py
-不会训练、重新拟合 scaler、更新权重，或覆盖前六课产物。
+python -X utf8 scripts/evaluate.py
+不会训练、重新拟合 scaler、更新权重，或覆盖训练阶段产物。
 """
 from pathlib import Path
 from datetime import datetime, timezone
@@ -19,13 +19,12 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'outputs/lesson07'
+OUT = ROOT / 'outputs/evaluation'
 sys.path.insert(0, str(ROOT / 'src'))
-from lesson06_cnn import load_saved_cnn, predict_raw_windows
-from lesson04_train_baseline import predict_windows
+from cnn import load_saved_cnn, predict_raw_windows
+from train_baseline import predict_windows
 
 
 def sha256(path):
@@ -88,20 +87,6 @@ def make_figures(cfg, names, result, raw, audit_rows):
     plt.rcParams.update({'font.sans-serif': ['Microsoft YaHei', 'SimHei', 'DejaVu Sans'],
                          'axes.unicode_minus': False, 'font.size': 12})
     short = ['正常', '内圈', '外圈', '滚动体']
-    demo = np.asarray(cfg['teaching_demo_confusion_matrix'])
-    fig, (ax, note) = plt.subplots(1, 2, figsize=(13, 6), gridspec_kw={'width_ratios': [1, 1]},
-                                 constrained_layout=True)
-    draw_matrix(ax, demo, short, '教学虚构数据｜不是本项目测试成绩')
-    ax.add_patch(Rectangle((-.5, .5), 4, 1, fill=False, edgecolor='#D99F2F', linewidth=3))
-    ax.add_patch(Rectangle((.5, -.5), 1, 4, fill=False, edgecolor='#248D77', linewidth=2))
-    note.axis('off')
-    note.text(.03, .96, '只看“内圈”这一类', fontsize=21, weight='bold', va='top')
-    note.text(.03, .78, '实际内圈：看第 2 行，共 10 个\n预测内圈：看第 2 列，共 9 个\n其中正确：交叉位置，共 7 个', fontsize=15, va='top', linespacing=1.7)
-    note.text(.03, .42, 'Precision = 7 / 9 ≈ 77.78%\nRecall = 7 / 10 = 70%\nF1 = 2×7 / (2×7+2+3) ≈ 0.7368', fontsize=15, va='top', linespacing=1.7)
-    note.text(.03, .12, '总体 Accuracy = (8+7+9+7) / 40 = 77.5%\n每类 F1 算完，再平均才是 Macro-F1。', fontsize=12, va='top', linespacing=1.5)
-    fig.savefig(OUT / '01-metrics-teaching-example.png', dpi=150)
-    plt.close(fig)
-
     fig, axes = plt.subplots(1, 2, figsize=(13, 6), constrained_layout=True)
     for ax, key, title in zip(axes, ['cnn', 'svm'], ['冻结 CNN', '冻结 SVM-C1']):
         im = draw_matrix(ax, result['models'][key]['confusion_matrix'], short, f'{title}｜3 HP 测试窗口')
@@ -140,24 +125,24 @@ def make_figures(cfg, names, result, raw, audit_rows):
 
 
 def main():
-    config_path = ROOT / 'configs/lesson07_evaluation.json'
+    config_path = ROOT / 'configs/evaluation.json'
     cfg = json.loads(config_path.read_text(encoding='utf-8'))
     dataset_path = ROOT / cfg['dataset']
     cnn_folder = ROOT / cfg['cnn_folder']
     svm_path = ROOT / cfg['baseline_model']
     protected = [dataset_path, cnn_folder / 'best-cnn.pt', cnn_folder / 'model-metadata.json',
-                 cnn_folder / 'lesson06-summary.json', svm_path, ROOT / 'outputs/lesson04/metrics.json',
-                 ROOT / 'outputs/lesson04/selection-frozen.json']
+                 cnn_folder / 'training-summary.json', svm_path, ROOT / 'outputs/baseline/metrics.json',
+                 ROOT / 'outputs/baseline/selection-frozen.json']
     hashes = {p.as_posix(): sha256(p) for p in protected}
     model, meta = load_saved_cnn(cnn_folder)
-    baseline_selection = json.loads((ROOT / 'outputs/lesson04/selection-frozen.json').read_text(encoding='utf-8'))
+    baseline_selection = json.loads((ROOT / 'outputs/baseline/selection-frozen.json').read_text(encoding='utf-8'))
     bundle = joblib.load(svm_path)
     mapping = json.loads((dataset_path.parent / 'label-map.json').read_text(encoding='utf-8'))
     names = [mapping[str(c)] for c in cfg['labels']]
     if names != meta['label_names'] or names != bundle['label_names']:
         raise ValueError('两种模型和数据的类别映射不一致。')
     if sha256(dataset_path) != meta['dataset_sha256'] or sha256(dataset_path) != baseline_selection['dataset_sha256']:
-        raise ValueError('数据不是两个已冻结模型对应的第三课数据。')
+        raise ValueError('数据不是两个已冻结模型对应的数据构建阶段数据。')
     if meta['window_points'] != cfg['window_points'] or meta['sampling_rate_hz'] != cfg['sampling_rate_hz']:
         raise ValueError('CNN 输入要求与评估配置不一致。')
     if meta['normalization']['fit_split'] != 'train':
@@ -171,7 +156,7 @@ def main():
                 'config': cfg, 'config_sha256': sha256(config_path),
                 'source_hashes': hashes, 'cnn_selected_epoch': meta['selected_epoch'],
                 'svm_selected_model': baseline_selection['chosen_candidate']['name'],
-                'training_performed': False, 'test_split_already_used_in_lesson04': True}
+                'training_performed': False, 'test_split_previously_evaluated_for_baseline': True}
     write_json(OUT / 'evaluation-frozen.json', manifest)
     print('已记录冻结模型和评估配置；不训练、不调参、不重新拟合 scaler。', flush=True)
     with np.load(dataset_path, allow_pickle=False) as z:
@@ -193,15 +178,15 @@ def main():
         outputs.append(predict_raw_windows(model, meta, raw[start:start+cfg['batch_size']], cfg['sampling_rate_hz'])['logits'])
     logits = np.concatenate(outputs)
     cnn = logits.argmax(axis=1)
-    # 独立核对第三课已标准化数组，避免推理和训练预处理不一致。
+    # 独立核对数据构建阶段已标准化数组，避免推理和训练预处理不一致。
     with torch.no_grad():
         normalized_logits = model(torch.from_numpy(normalized).unsqueeze(1)).numpy()
     np.testing.assert_allclose(logits, normalized_logits, rtol=1e-5, atol=1e-6)
     svm = predict_windows(bundle, raw, cfg['sampling_rate_hz'])
     for k, v in model.state_dict().items():
         assert torch.equal(before_state[k], v)
-    old = json.loads((ROOT / 'outputs/lesson04/metrics.json').read_text(encoding='utf-8'))
-    previous = list(csv.DictReader((ROOT / 'outputs/lesson04/test-predictions.csv').open(encoding='utf-8-sig')))
+    old = json.loads((ROOT / 'outputs/baseline/metrics.json').read_text(encoding='utf-8'))
+    previous = list(csv.DictReader((ROOT / 'outputs/baseline/test-predictions.csv').open(encoding='utf-8-sig')))
     assert old['selected_model'] == baseline_selection['chosen_candidate']['name'] == 'SVM-C1'
     assert len(previous) == len(y)
     for i, row in enumerate(previous):
@@ -239,25 +224,16 @@ def main():
     write_csv(OUT / 'window-audit.csv', audit_rows, columns)
     np.savez_compressed(OUT / 'test-output.npz', logits=logits, y_true=y, cnn_prediction=cnn,
                         svm_prediction=svm, record_id=record, load_hp=load)
-    demo_cm = np.asarray(cfg['teaching_demo_confusion_matrix'], dtype=np.int64)
-    demo_y, demo_pred = [], []
-    for a in range(4):
-        for b in range(4):
-            demo_y.extend([a] * int(demo_cm[a, b]))
-            demo_pred.extend([b] * int(demo_cm[a, b]))
-    demo = {'is_fictional_teaching_data': True,
-            **metrics(np.asarray(demo_y), np.asarray(demo_pred), names, cfg['labels'])}
-    write_json(OUT / 'teaching-demo-metrics.json', demo)
     for path, expected in hashes.items():
-        assert sha256(Path(path)) == expected, f'前课输入或模型被修改：{path}'
+        assert sha256(Path(path)) == expected, f'既有实验输入或模型被修改：{path}'
     result = {'models': scores, 'per_record': per_record, 'label_names': names,
               'cnn_selected_epoch': meta['selected_epoch'], 'model_hashes': hashes,
-              'cnn_test_evaluation_done': True, 'test_split_already_used_in_lesson04': True,
+              'cnn_test_evaluation_done': True, 'test_split_previously_evaluated_for_baseline': True,
               'evaluation_scope': 'CWRU 0/1 HP train, 2 HP validation, 3 HP test; four records, window-level metrics; not unseen bearing/device validation',
               'checks': {'frozen_before_prediction': True, 'no_parameter_update': True,
                          'original_artifacts_unchanged': True, 'record_groups_disjoint': True,
                          'same_test_windows_for_both_models': True, 'saved_preprocessing_consistent': True,
-                         'svm_predictions_match_lesson04': True, 'counts_match_confusion_matrices': True},
+                         'svm_predictions_match_baseline': True, 'counts_match_confusion_matrices': True},
               'versions': {'python': platform.python_version(), 'torch': torch.__version__,
                            'numpy': np.__version__, 'sklearn': sklearn.__version__, 'matplotlib': matplotlib.__version__}}
     write_json(OUT / 'metrics.json', result)
@@ -267,14 +243,14 @@ def main():
                            for name, m in [('统计特征＋SVM-C1', svm_m), ('振动序列＋CNN', cnn_m)])
     class_table = '\n'.join(f"| {r['state']} | {r['support']} | {r['tp']} | {r['fp']} | {r['fn']} | {r['precision']:.2%} | {r['recall']:.2%} | {r['f1']:.6f} |" for r in cnn_m['per_class'])
     record_table = '\n'.join(f"| {r['record_id']} | {r['state']} | {r['windows']} | {r['cnn_errors']} | {r['svm_errors']} |" for r in per_record)
-    error_note = ('本次 CNN 没有误判，errors-cnn.csv 只有表头。样本图为每类分数间隔较小的正确窗口，不是错误样本。没有真实误判，不能编造误判原因；教学矩阵另外明确标记为虚构数据。'
+    error_note = ('本次 CNN 没有误判，errors-cnn.csv 只有表头。样本图为每类分数间隔较小的正确窗口，不是错误样本。没有真实误判，不能编造误判原因。'
                   if cnn_m['errors'] == 0 else f"本次 CNN 有 {cnn_m['errors']} 个误判，全部索引与来源保存在 errors-cnn.csv。样本图优先展示前四个误判，具体原因需结合数据检查，不凭一张图推定物理原因。")
     comparison_note = ('本次两模型 Accuracy 与 Macro-F1 相同；没有依据声称 CNN 提高准确率。'
                        if cnn_m['accuracy'] == svm_m['accuracy'] and cnn_m['macro_f1'] == svm_m['macro_f1']
                        else '本次分数有差异，结论只适用于当前划分；未据此重选 CNN 权重或 SVM 参数。')
-    report = f'''# 第七课：冻结模型测试与指标分析结果
+    report = f'''# 测试评估阶段：冻结模型测试与指标分析结果
 
-本报告来自实际运行；只加载第六课 CNN 和第四课 SVM，没有训练或重新拟合标准化器。先记录模型／数据哈希及评估规则，再对同一批测试窗口预测。
+本报告来自实际运行；只加载CNN 训练阶段 CNN 和基线训练阶段 SVM，没有训练或重新拟合标准化器。先记录模型／数据哈希及评估规则，再对同一批测试窗口预测。
 
 ## 1. 测试条件与比较
 
@@ -317,13 +293,7 @@ CNN 把故障预测为正常：{cnn_m['normal_vs_fault']['fn']} 个；正常预�
 
 `window-audit.csv` 记录样本索引、原始文件、记录号、通道及时间范围。图中横轴是记录内时间。CNN 两个最大 logits 的差仅用于选择观察样本，不是校准概率，不能当作已验证的可靠性阈值。检查样本未用于改模型。
 
-## 5. 指标教学示例：与真实测试分开
-
-![虚构教学矩阵与内圈 Precision／Recall]({(OUT / '01-metrics-teaching-example.png').as_posix()})
-
-教学例子内圈 TP=7、FP=2、FN=3，所以 Precision=7/9，Recall=7/10，F1=14/19。40 个例子总体正确 31 个，Accuracy=77.5%；完整各类结果见 teaching-demo-metrics.json。这些数字不是模型实测结果。
-
-## 6. 文件与核对
+## 5. 文件与核对
 
 - [metrics.json]({(OUT / 'metrics.json').as_posix()})：实际指标、类别及记录计数、版本、检查结果。
 - [evaluation-frozen.json]({(OUT / 'evaluation-frozen.json').as_posix()})：预测前记录的配置、模型与数据身份。
@@ -331,19 +301,19 @@ CNN 把故障预测为正常：{cnn_m['normal_vs_fault']['fn']} 个；正常预�
 - [errors-cnn.csv]({(OUT / 'errors-cnn.csv').as_posix()})、[errors-svm.csv]({(OUT / 'errors-svm.csv').as_posix()})：仅错误窗口；没有错误时只有表头。
 - [window-audit.csv]({(OUT / 'window-audit.csv').as_posix()})：图中观察样本与来源。
 
-已核对训练／验证／测试记录不交叉、两模型测试窗口一致、CNN 参数及前课文件未改变、CNN 预处理一致、SVM 逐窗口预测与第四课一致、混淆矩阵和正确数一致。
+已核对训练／验证／测试记录不交叉、两模型测试窗口一致、CNN 参数及既有实验文件未改变、CNN 预处理一致、SVM 逐窗口预测与基线训练阶段一致、混淆矩阵和正确数一致。
 
-## 7. 结论范围
+## 6. 结论范围
 
-这是同一 CWRU 试验台上的跨负载窗口分类。184 个窗口不是 184 次独立实验、184 个独立轴承或 184 台电机。第四课已使用这个测试划分；本课作冻结模型对比，没有把它称为全新的独立数据验证，也未根据测试结果调参。
+这是同一 CWRU 试验台上的跨负载窗口分类。184 个窗口不是 184 次独立实验、184 个独立轴承或 184 台电机。基线训练阶段已使用这个测试划分；本程序作冻结模型对比，没有把它称为全新的独立数据验证，也未根据测试结果调参。
 
-零误判也不能证明总体错误率为零或现场可用。当前没有新设备、未知故障、真实噪声采集或实际部署验证。第八课可设计预先固定的噪声／工况实验，明确复用数据与人工加噪的边界。
+零误判也不能证明总体错误率为零或现场可用。当前没有新设备、未知故障、真实噪声采集或实际部署验证。噪声评估阶段可设计预先固定的噪声／工况实验，明确复用数据与人工加噪的边界。
 '''
-    (OUT / '第七课-测试评估与模型对比结果.md').write_text(report, encoding='utf-8')
+    (OUT / 'evaluation-report.md').write_text(report, encoding='utf-8')
     for name, m in [('CNN', cnn_m), ('SVM-C1', svm_m)]:
         print(f"{name}：正确 {m['correct']}/{m['total']}，错误 {m['errors']}，Accuracy={m['accuracy']:.2%}，Macro-F1={m['macro_f1']:.6f}", flush=True)
     print('检查通过：冻结模型、共同测试窗口、预处理一致、SVM 旧结果一致、来源及计数可追溯。', flush=True)
-    print('报告：', OUT / '第七课-测试评估与模型对比结果.md', flush=True)
+    print('报告：', OUT / 'evaluation-report.md', flush=True)
 
 
 if __name__ == '__main__':

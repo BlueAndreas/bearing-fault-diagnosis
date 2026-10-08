@@ -1,4 +1,4 @@
-"""本项目的教学用小型一维 CNN；不是原参考仓库训练结果的复现。"""
+"""本项目的原型小型一维 CNN；不是原参考仓库训练结果的复现。"""
 from collections import OrderedDict
 from pathlib import Path
 import hashlib
@@ -12,7 +12,7 @@ class SmallCNN1D(nn.Module):
     def __init__(self, channels=(16, 32), kernels=(9, 5), window_points=1024):
         super().__init__()
         if len(channels) != 2 or len(kernels) != 2 or any(c < 1 for c in channels):
-            raise ValueError('本教学网络需要两组正整数通道数和卷积核。')
+            raise ValueError('本网络需要两组正整数通道数和卷积核。')
         if any(k < 1 or k % 2 == 0 for k in kernels) or window_points < 4:
             raise ValueError('卷积核需为正奇数，窗口长度至少为 4。')
         self.window_points = window_points

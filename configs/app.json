@@ -8,9 +8,9 @@
   "max_source_points": 2000000,
   "max_duration_seconds": 20,
   "batch_size": 32,
-  "dataset": "data/processed/lesson03/dataset.npz",
-  "cnn_folder": "outputs/lesson06",
-  "svm_file": "outputs/lesson04/baseline-model.joblib",
-  "saved_runs": "outputs/lesson09/runs",
+  "dataset": "data/processed/dataset/dataset.npz",
+  "cnn_folder": "outputs/cnn",
+  "svm_file": "outputs/baseline/baseline-model.joblib",
+  "saved_runs": "outputs/diagnosis/runs",
   "scope": "local offline CWRU four-class prototype; no training, live sensor, unknown-fault detector, confidence calibration or industrial validation"
 }

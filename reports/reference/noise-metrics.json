@@ -1,8 +1,8 @@
 {
   "config": {
-    "dataset": "data/processed/lesson03/dataset.npz",
-    "cnn_folder": "outputs/lesson06",
-    "baseline_model": "outputs/lesson04/baseline-model.joblib",
+    "dataset": "data/processed/dataset/dataset.npz",
+    "cnn_folder": "outputs/cnn",
+    "baseline_model": "outputs/baseline/baseline-model.joblib",
     "labels": [
       0,
       1,
@@ -46,7 +46,7 @@
     },
     "sample_audit_rule": "Within the fixed detailed case, first union-error per true class; if that class has no error, first correct window. Visualization only, no model selection.",
     "clean_load_audit": "0/1 HP are fitted training data, 2 HP is used validation, 3 HP is reused test; no leave-one-load-out retraining",
-    "known_reuse": "Same records as previous lessons; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
+    "known_reuse": "Same records as the clean evaluation; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
   },
   "label_names": [
     "正常",
@@ -3394,7 +3394,7 @@
     "frozen_before_predictions": true,
     "same_noisy_input_for_both_models": true,
     "per_window_snr_verified": true,
-    "original_predictions_match_lesson07": true,
+    "original_predictions_match_clean_evaluation": true,
     "cnn_weights_unchanged": true,
     "previous_artifacts_unchanged": true,
     "train_val_test_record_groups_disjoint": true

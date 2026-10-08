@@ -38,7 +38,7 @@ def main():
             with path.open('xb') as output:
                 output.write(content)
         print(number,path.name,'点数=',data[key].size,'SHA-256=',hashlib.sha256(content).hexdigest())
-    print('第三课的 16 条记录已准备好。')
+    print('数据构建阶段的 16 条记录已准备好。')
 
 
 if __name__=='__main__':

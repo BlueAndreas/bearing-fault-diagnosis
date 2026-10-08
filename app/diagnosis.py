@@ -1,4 +1,4 @@
-"""第九课的输入检查、处理、冻结模型推理与本地报告。"""
+"""诊断服务的输入检查、处理、冻结模型推理与本地报告。"""
 from pathlib import Path
 from datetime import datetime
 from math import gcd
@@ -26,9 +26,9 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 sys.path.insert(0, str(ROOT / 'scripts'))
-from lesson06_cnn import load_saved_cnn, predict_raw_windows
-from lesson04_train_baseline import predict_windows, extract_features, FEATURE_ZH
-from lesson08_noise import make_unit_noise, add_noise_at_snr
+from cnn import load_saved_cnn, predict_raw_windows
+from train_baseline import predict_windows, extract_features, FEATURE_ZH
+from noise import make_unit_noise, add_noise_at_snr
 
 
 def digest(data):
@@ -47,7 +47,7 @@ def numeric_vector(values, limit):
     if len(a) < 4 or len(a) > limit or not np.isfinite(a).all():
         raise ValueError('信号过短、超过点数限制，或含 NaN／Inf；请检查文件。')
     if np.std(a) == 0:
-        raise ValueError('信号是常量或全零，不能作为有效振动进行本课诊断。')
+        raise ValueError('信号是常量或全零，不能作为有效振动进行本程序诊断。')
     return a
 
 
@@ -59,10 +59,10 @@ def read_file(name, content, cfg):
         try:
             data = loadmat(io.BytesIO(content))
         except Exception as e:
-            raise ValueError('MAT 无法读取；本课支持 SciPy 可读取的 MATLAB v4／v5 至 v7.2，不支持 v7.3 HDF5。') from e
+            raise ValueError('MAT 无法读取；本程序支持 SciPy 可读取的 MATLAB v4／v5 至 v7.2，不支持 v7.3 HDF5。') from e
         variables = {k: v for k, v in data.items() if not k.startswith('__') and k.endswith('_DE_time')}
         if not variables:
-            raise ValueError('MAT 中没有 *_DE_time 驱动端变量；本课上传入口限定这种 CWRU 变量格式。')
+            raise ValueError('MAT 中没有 *_DE_time 驱动端变量；本程序上传入口限定这种 CWRU 变量格式。')
         signals = {k: numeric_vector(v, cfg['max_source_points']) for k, v in variables.items()}
         return signals
     if suffix == '.csv':
@@ -99,7 +99,7 @@ def decode_upload(payload, cfg):
 
 def segment_windows(signal, source_rate, start_second, duration_second, cfg):
     if isinstance(source_rate, bool) or source_rate not in cfg['allowed_source_rates']:
-        raise ValueError('请按数据来源确认采样率；本课只支持 12000 或 48000 Hz。')
+        raise ValueError('请按数据来源确认采样率；本程序只支持 12000 或 48000 Hz。')
     if not np.isfinite(start_second) or not np.isfinite(duration_second) or start_second < 0:
         raise ValueError('起始秒数需为非负有限数。')
     if duration_second < cfg['window_points']/cfg['sampling_rate_hz'] or duration_second > cfg['max_duration_seconds']:
@@ -136,7 +136,7 @@ def spectrum(values, fs):
 
 class DiagnosisService:
     def __init__(self):
-        self.cfg = json.loads((ROOT / 'configs/lesson09_app.json').read_text(encoding='utf-8'))
+        self.cfg = json.loads((ROOT / 'configs/app.json').read_text(encoding='utf-8'))
         torch.set_num_threads(2)
         self.model, self.meta = load_saved_cnn(ROOT / self.cfg['cnn_folder'])
         self.svm = joblib.load(ROOT / self.cfg['svm_file'])
@@ -153,13 +153,13 @@ class DiagnosisService:
         self.runs.mkdir(parents=True, exist_ok=True)
         with np.load(ROOT / self.cfg['dataset'], allow_pickle=False) as z:
             self.test_raw, self.test_y = z['X_test_raw'].copy(), z['y_test'].copy()
-        index = csv.DictReader((ROOT / 'data/processed/lesson03/window-index.csv').open(encoding='utf-8-sig'))
+        index = csv.DictReader((ROOT / 'data/processed/dataset/window-index.csv').open(encoding='utf-8-sig'))
         self.test_index = sorted([r for r in index if r['split']=='test'], key=lambda r:int(r['sample_index_in_split']))
         if digest((ROOT / self.cfg['dataset']).read_bytes()) != self.meta['dataset_sha256']:
             raise ValueError('示例数据与模型的记录身份不一致。')
 
     def catalog(self):
-        return {'app': 'bearing-lesson09', 'project_identity': digest(str(ROOT).encode()),
+        return {'app': 'bearing-fault-diagnosis', 'project_identity': digest(str(ROOT).encode()),
                 'examples': [{'id':str(c), 'name':f'{name} · 记录 {self.test_index[c*46]["record_id"]} · 3 HP',
                               'known_state':name} for c,name in enumerate(self.names)],
                 'model_status': '已加载 CNN 与 SVM-C1 · CPU · 只做预测',
@@ -190,7 +190,7 @@ class DiagnosisService:
                 idx = [r for r in self.test_index if int(r['label']) == c]
                 source_meta = {'kind':'example','filename':Path(idx[0]['file']).name, 'channel':idx[0]['channel'],
                                'record_id':int(idx[0]['record_id']), 'known_state':self.names[c],
-                               'known_label_source':'第三课来源清单，不是模型推断', 'data_role':'既有 3 HP 测试窗口，已在前课使用',
+                               'known_label_source':'数据来源清单，不是模型推断', 'data_role':'既有 3 HP 测试窗口，已在既有实验使用',
                                'noise_level':noise_level, 'noise_seed':None if noise_level=='original' else 2026,
                                'input_windows_sha256':digest(np.asarray(raw).tobytes())}
                 prep = {'original_sampling_rate_hz':48000 if c==0 else 12000, 'aligned_sampling_rate_hz':12000,

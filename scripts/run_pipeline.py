@@ -12,10 +12,10 @@ def main():
     parser.add_argument('--skip-download', action='store_true',
                         help='已有 16 条官方记录，跳过联网准备步骤')
     args = parser.parse_args()
-    stages = [] if args.skip_download else ['prepare_lesson03_data.py']
-    stages += ['lesson03_build_dataset.py', 'lesson04_train_baseline.py',
-               'lesson06_train_cnn.py', 'lesson07_evaluate.py',
-               'lesson08_noise_experiment.py']
+    stages = [] if args.skip_download else ['download_data.py']
+    stages += ['build_dataset.py', 'train_baseline.py',
+               'train_cnn.py', 'evaluate.py',
+               'evaluate_noise.py']
     for index, name in enumerate(stages, 1):
         print(f'\n[{index}/{len(stages)}] {name}', flush=True)
         subprocess.run([sys.executable, '-X', 'utf8', str(ROOT / 'scripts' / name)],
