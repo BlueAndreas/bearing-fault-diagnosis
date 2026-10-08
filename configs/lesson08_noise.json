@@ -1,0 +1,23 @@
+{
+  "dataset": "data/processed/lesson03/dataset.npz",
+  "cnn_folder": "outputs/lesson06",
+  "baseline_model": "outputs/lesson04/baseline-model.joblib",
+  "labels": [0, 1, 2, 3],
+  "sampling_rate_hz": 12000,
+  "window_points": 1024,
+  "batch_size": 32,
+  "device": "cpu",
+  "torch_threads": 2,
+  "noise_split": "test",
+  "snr_db_levels": [20, 10, 5, 0, -5],
+  "noise_seeds": [2026, 2027, 2028],
+  "noise_recipe": "NumPy standard_normal float64; normalize each window draw to RMS=1 without removing sample mean; multiply by original-window RMS * 10**(-snr_db/20); add before saved preprocessing",
+  "signal_power_definition": "mean(original_window**2), including DC; original recorded background is part of the reference signal",
+  "pairing": "same noisy array for CNN and SVM; same noise direction across SNR levels within each seed",
+  "aggregation": "mean and population std (ddof=0) of three noise-draw metrics; not a confidence interval or independent-device sample count",
+  "waveform_example": {"test_index": 46, "seed": 2026, "snr_db_levels": [20, 10, 0]},
+  "detailed_case": {"snr_db": -5, "seed": 2026},
+  "sample_audit_rule": "Within the fixed detailed case, first union-error per true class; if that class has no error, first correct window. Visualization only, no model selection.",
+  "clean_load_audit": "0/1 HP are fitted training data, 2 HP is used validation, 3 HP is reused test; no leave-one-load-out retraining",
+  "known_reuse": "Same records as previous lessons; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
+}

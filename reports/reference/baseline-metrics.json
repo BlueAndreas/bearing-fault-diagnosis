@@ -1,0 +1,127 @@
+{
+  "selected_model": "SVM-C1",
+  "validation_results": [
+    {
+      "name": "SVM-C1",
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    {
+      "name": "SVM-C10",
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    {
+      "name": "RF-depth6",
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    {
+      "name": "RF-unlimited",
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    }
+  ],
+  "test": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "correct": 184,
+    "total": 184,
+    "confusion_matrix": [
+      [
+        46,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        46,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        46,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        46
+      ]
+    ],
+    "classification_report": {
+      "正常": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 46.0
+      },
+      "内圈故障": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 46.0
+      },
+      "外圈故障": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 46.0
+      },
+      "滚动体故障": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 46.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 184.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 184.0
+      }
+    }
+  },
+  "checks": {
+    "source_dataset_unchanged": true,
+    "record_groups_disjoint": true,
+    "model_fit_on_train_only": true,
+    "model_selected_on_validation_only": true,
+    "saved_model_reload_matches_validation": true,
+    "confusion_matrix_matches_counts": true
+  },
+  "shapes": {
+    "train": [
+      368,
+      8
+    ],
+    "val": [
+      184,
+      8
+    ],
+    "test": [
+      184,
+      8
+    ]
+  },
+  "versions": {
+    "python": "3.14.4",
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "sklearn": "1.8.0",
+    "joblib": "1.5.3",
+    "matplotlib": "3.10.9"
+  },
+  "evaluation_scope": "window classification on held-out load 3 HP on CWRU; not unseen-bearing or unseen-device validation"
+}

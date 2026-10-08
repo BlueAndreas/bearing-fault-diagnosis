@@ -1,0 +1,250 @@
+{
+  "models": {
+    "cnn": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "correct": 184,
+      "errors": 0,
+      "total": 184,
+      "confusion_matrix": [
+        [
+          46,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          46,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          46,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          46
+        ]
+      ],
+      "per_class": [
+        {
+          "label": 0,
+          "state": "正常",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 1,
+          "state": "内圈故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 2,
+          "state": "外圈故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 3,
+          "state": "滚动体故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      ],
+      "normal_vs_fault": {
+        "tn": 46,
+        "fp": 0,
+        "fn": 0,
+        "tp": 138,
+        "fault_recall": 1.0,
+        "normal_false_alarm_rate": 0.0,
+        "fault_type_confusions": 0
+      }
+    },
+    "svm": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "correct": 184,
+      "errors": 0,
+      "total": 184,
+      "confusion_matrix": [
+        [
+          46,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          46,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          46,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          46
+        ]
+      ],
+      "per_class": [
+        {
+          "label": 0,
+          "state": "正常",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 1,
+          "state": "内圈故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 2,
+          "state": "外圈故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        {
+          "label": 3,
+          "state": "滚动体故障",
+          "support": 46,
+          "tp": 46,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      ],
+      "normal_vs_fault": {
+        "tn": 46,
+        "fp": 0,
+        "fn": 0,
+        "tp": 138,
+        "fault_recall": 1.0,
+        "normal_false_alarm_rate": 0.0,
+        "fault_type_confusions": 0
+      }
+    }
+  },
+  "per_record": [
+    {
+      "record_id": 100,
+      "state": "正常",
+      "load_hp": 3,
+      "windows": 46,
+      "cnn_errors": 0,
+      "svm_errors": 0
+    },
+    {
+      "record_id": 108,
+      "state": "内圈故障",
+      "load_hp": 3,
+      "windows": 46,
+      "cnn_errors": 0,
+      "svm_errors": 0
+    },
+    {
+      "record_id": 121,
+      "state": "滚动体故障",
+      "load_hp": 3,
+      "windows": 46,
+      "cnn_errors": 0,
+      "svm_errors": 0
+    },
+    {
+      "record_id": 133,
+      "state": "外圈故障",
+      "load_hp": 3,
+      "windows": 46,
+      "cnn_errors": 0,
+      "svm_errors": 0
+    }
+  ],
+  "label_names": [
+    "正常",
+    "内圈故障",
+    "外圈故障",
+    "滚动体故障"
+  ],
+  "cnn_selected_epoch": 30,
+  "model_hashes": {
+    "data/processed/lesson03/dataset.npz": "d63f6e4f3e94673626d77ba4037e96e576ba8e8b60a18920cac4fe5b0a8a17a1",
+    "outputs/lesson06/best-cnn.pt": "2e9ba090556c18be554f075bfabd789ff6ba017fd693e8b77c89dec3df8d5d93",
+    "outputs/lesson06/model-metadata.json": "3fdb5047b7911158be418a950bac1965276ab0c571d565b72168f7097adc5adc",
+    "outputs/lesson06/lesson06-summary.json": "fb729dad56da4960c6d015b4edc1c2bbeb03af791cb489a1cfe2ea266fa03ba0",
+    "outputs/lesson04/baseline-model.joblib": "841d1193adee82d71d5ed6e9b6b4dd1500dc8d300d9111057d69c89d7a747d8d",
+    "outputs/lesson04/metrics.json": "a5dcab7e53898b12c04b07fd7f66efd5feb40cc3c05dacf324127ab36827415f",
+    "outputs/lesson04/selection-frozen.json": "634d3dc6c6324d46a6df826582edc3cba249ada4da75f891446049dccbe058f9"
+  },
+  "cnn_test_evaluation_done": true,
+  "test_split_already_used_in_lesson04": true,
+  "evaluation_scope": "CWRU 0/1 HP train, 2 HP validation, 3 HP test; four records, window-level metrics; not unseen bearing/device validation",
+  "checks": {
+    "frozen_before_prediction": true,
+    "no_parameter_update": true,
+    "original_artifacts_unchanged": true,
+    "record_groups_disjoint": true,
+    "same_test_windows_for_both_models": true,
+    "saved_preprocessing_consistent": true,
+    "svm_predictions_match_lesson04": true,
+    "counts_match_confusion_matrices": true
+  },
+  "versions": {
+    "python": "3.14.4",
+    "torch": "2.12.0+cpu",
+    "numpy": "2.4.4",
+    "sklearn": "1.8.0",
+    "matplotlib": "3.10.9"
+  }
+}

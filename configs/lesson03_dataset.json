@@ -1,0 +1,25 @@
+{
+  "sampling_rate_hz": 12000,
+  "segment_start_second": 0.5,
+  "segment_duration_second": 4.0,
+  "window_points": 1024,
+  "fault_diameter_inch": 0.007,
+  "outer_race_position": "6 oclock",
+  "normalization": "one_shared_mean_std_fitted_on_training_windows_only",
+  "nominal_rpm_by_load": [1797, 1772, 1750, 1730],
+  "split_by_load": {"0": "train", "1": "train", "2": "val", "3": "test"},
+  "classes": [
+    {"label": 0, "name": "正常", "base_record_id": 97, "source_rate_hz": 48000,
+     "file_pattern": "Normal Baseline Data/{nominal_rpm} rpm.mat",
+     "fallback_pattern": "Normal Baseline Data/{record_id}.mat"},
+    {"label": 1, "name": "内圈故障", "base_record_id": 105, "source_rate_hz": 12000,
+     "file_pattern": "12k_DE/IR007_{load}.mat", "fallback_pattern": "12k_DE/{record_id}.mat"},
+    {"label": 2, "name": "外圈故障", "base_record_id": 130, "source_rate_hz": 12000,
+     "file_pattern": "12k_DE/OR007@6_{load}.mat", "fallback_pattern": "12k_DE/{record_id}.mat"},
+    {"label": 3, "name": "滚动体故障", "base_record_id": 118, "source_rate_hz": 12000,
+     "file_pattern": "12k_DE/B007_{load}.mat", "fallback_pattern": "12k_DE/{record_id}.mat"}
+  ],
+  "fault_reference": "https://engineering.case.edu/bearingdatacenter/12k-drive-end-bearing-fault-data",
+  "normal_reference": "https://engineering.case.edu/bearingdatacenter/normal-baseline-data",
+  "normal_rate_reference": "https://www.researchgate.net/publication/276248554_Rolling_Element_Bearing_Diagnostics_Using_the_Case_Western_Reserve_University_Data_A_Benchmark_Study"
+}

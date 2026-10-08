@@ -1,0 +1,3409 @@
+{
+  "config": {
+    "dataset": "data/processed/lesson03/dataset.npz",
+    "cnn_folder": "outputs/lesson06",
+    "baseline_model": "outputs/lesson04/baseline-model.joblib",
+    "labels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "sampling_rate_hz": 12000,
+    "window_points": 1024,
+    "batch_size": 32,
+    "device": "cpu",
+    "torch_threads": 2,
+    "noise_split": "test",
+    "snr_db_levels": [
+      20,
+      10,
+      5,
+      0,
+      -5
+    ],
+    "noise_seeds": [
+      2026,
+      2027,
+      2028
+    ],
+    "noise_recipe": "NumPy standard_normal float64; normalize each window draw to RMS=1 without removing sample mean; multiply by original-window RMS * 10**(-snr_db/20); add before saved preprocessing",
+    "signal_power_definition": "mean(original_window**2), including DC; original recorded background is part of the reference signal",
+    "pairing": "same noisy array for CNN and SVM; same noise direction across SNR levels within each seed",
+    "aggregation": "mean and population std (ddof=0) of three noise-draw metrics; not a confidence interval or independent-device sample count",
+    "waveform_example": {
+      "test_index": 46,
+      "seed": 2026,
+      "snr_db_levels": [
+        20,
+        10,
+        0
+      ]
+    },
+    "detailed_case": {
+      "snr_db": -5,
+      "seed": 2026
+    },
+    "sample_audit_rule": "Within the fixed detailed case, first union-error per true class; if that class has no error, first correct window. Visualization only, no model selection.",
+    "clean_load_audit": "0/1 HP are fitted training data, 2 HP is used validation, 3 HP is reused test; no leave-one-load-out retraining",
+    "known_reuse": "Same records as previous lessons; evaluation stress experiment only, no tuning, retraining, denoising, or actual field noise validation"
+  },
+  "label_names": [
+    "正常",
+    "内圈故障",
+    "外圈故障",
+    "滚动体故障"
+  ],
+  "trials": [
+    {
+      "trial_id": 0,
+      "condition": "original",
+      "snr_db": null,
+      "seed": null,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "fd05c9fb15ad37b0c8d35a832cf7f1e24c165d91f05ba38d3548fb070a1c7c57",
+      "measured_snr_range_db": null
+    },
+    {
+      "trial_id": 1,
+      "condition": "20dB",
+      "snr_db": 20,
+      "seed": 2026,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "f775ce3c953865d2d96295fe353f5e05a1ae963be1a19fe227c640ee0a380edf",
+      "measured_snr_range_db": [
+        19.999999999999996,
+        20.0
+      ]
+    },
+    {
+      "trial_id": 2,
+      "condition": "20dB",
+      "snr_db": 20,
+      "seed": 2027,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "a1b24508fa934b2772c1119dd483bca9ab72b180cf5d33b79b6ff099bf3aabaf",
+      "measured_snr_range_db": [
+        19.999999999999996,
+        20.0
+      ]
+    },
+    {
+      "trial_id": 3,
+      "condition": "20dB",
+      "snr_db": 20,
+      "seed": 2028,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "d4c7dc37d6e4c68eaf4781dba74804298d5367ad707e8ce61729cf1a6acc36bf",
+      "measured_snr_range_db": [
+        19.999999999999996,
+        20.000000000000004
+      ]
+    },
+    {
+      "trial_id": 4,
+      "condition": "10dB",
+      "snr_db": 10,
+      "seed": 2026,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "66bcd44eeec417597d93acabd5ea16680f03da265a1304b085be319bc3b02697",
+      "measured_snr_range_db": [
+        9.999999999999996,
+        10.000000000000002
+      ]
+    },
+    {
+      "trial_id": 5,
+      "condition": "10dB",
+      "snr_db": 10,
+      "seed": 2027,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "875250844baac8ee7d90fdd16d305bf1c1105ebf5ce32d5a8a2f1c6d0a41aab8",
+      "measured_snr_range_db": [
+        9.999999999999996,
+        10.000000000000002
+      ]
+    },
+    {
+      "trial_id": 6,
+      "condition": "10dB",
+      "snr_db": 10,
+      "seed": 2028,
+      "models": {
+        "cnn": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "2f16cc026ae395a6f9ddf323243b86230419eff1ec8bbad6654731e09cf8274a",
+      "measured_snr_range_db": [
+        9.999999999999998,
+        10.000000000000002
+      ]
+    },
+    {
+      "trial_id": 7,
+      "condition": "5dB",
+      "snr_db": 5,
+      "seed": 2026,
+      "models": {
+        "cnn": {
+          "accuracy": 0.9456521739130435,
+          "macro_f1": 0.9450023912003825,
+          "correct": 174,
+          "errors": 10,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              36,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 10,
+              "fn": 0,
+              "precision": 0.8214285714285714,
+              "recall": 1.0,
+              "f1": 0.9019607843137255
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 36,
+              "fp": 0,
+              "fn": 10,
+              "precision": 1.0,
+              "recall": 0.782608695652174,
+              "f1": 0.8780487804878049
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 10
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "30d3aba9d31b56fb694c6c0030b45b9d1f1c0d8c991fa7179899e45f6a1ad9e8",
+      "measured_snr_range_db": [
+        4.999999999999998,
+        5.000000000000002
+      ]
+    },
+    {
+      "trial_id": 8,
+      "condition": "5dB",
+      "snr_db": 5,
+      "seed": 2027,
+      "models": {
+        "cnn": {
+          "accuracy": 0.9293478260869565,
+          "macro_f1": 0.9279083785412899,
+          "correct": 171,
+          "errors": 13,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              13,
+              33,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 13,
+              "fn": 0,
+              "precision": 0.7796610169491526,
+              "recall": 1.0,
+              "f1": 0.8761904761904762
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 33,
+              "fp": 0,
+              "fn": 13,
+              "precision": 1.0,
+              "recall": 0.717391304347826,
+              "f1": 0.8354430379746836
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 13
+          }
+        },
+        "svm": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "correct": 184,
+          "errors": 0,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 0
+          }
+        }
+      },
+      "input_sha256": "46c83e791488932772a4d5280aac65577dbfb97fdda7b331b006990f66416934",
+      "measured_snr_range_db": [
+        4.999999999999998,
+        5.000000000000002
+      ]
+    },
+    {
+      "trial_id": 9,
+      "condition": "5dB",
+      "snr_db": 5,
+      "seed": 2028,
+      "models": {
+        "cnn": {
+          "accuracy": 0.9293478260869565,
+          "macro_f1": 0.9279083785412899,
+          "correct": 171,
+          "errors": 13,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              13,
+              33,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 13,
+              "fn": 0,
+              "precision": 0.7796610169491526,
+              "recall": 1.0,
+              "f1": 0.8761904761904762
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 33,
+              "fp": 0,
+              "fn": 13,
+              "precision": 1.0,
+              "recall": 0.717391304347826,
+              "f1": 0.8354430379746836
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 13
+          }
+        },
+        "svm": {
+          "accuracy": 0.9945652173913043,
+          "macro_f1": 0.9945645752097365,
+          "correct": 183,
+          "errors": 1,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              45
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 1,
+              "fn": 0,
+              "precision": 0.9787234042553191,
+              "recall": 1.0,
+              "f1": 0.989247311827957
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 45,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.9782608695652174,
+              "f1": 0.989010989010989
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 1
+          }
+        }
+      },
+      "input_sha256": "3c5d7f9670adc169eebb5dbd051ecff9c15a1cf4ef4c4d01afdb7220b2bb3ad5",
+      "measured_snr_range_db": [
+        4.999999999999998,
+        5.0000000000000036
+      ]
+    },
+    {
+      "trial_id": 10,
+      "condition": "0dB",
+      "snr_db": 0,
+      "seed": 2026,
+      "models": {
+        "cnn": {
+          "accuracy": 0.5815217391304348,
+          "macro_f1": 0.5090454942283442,
+          "correct": 107,
+          "errors": 77,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              31,
+              0,
+              15
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 77,
+              "fn": 0,
+              "precision": 0.37398373983739835,
+              "recall": 1.0,
+              "f1": 0.5443786982248521
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 15,
+              "fp": 0,
+              "fn": 31,
+              "precision": 1.0,
+              "recall": 0.32608695652173914,
+              "f1": 0.4918032786885246
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 77
+          }
+        },
+        "svm": {
+          "accuracy": 0.9836956521739131,
+          "macro_f1": 0.9836782968657599,
+          "correct": 181,
+          "errors": 3,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              43,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 43,
+              "fp": 0,
+              "fn": 3,
+              "precision": 1.0,
+              "recall": 0.9347826086956522,
+              "f1": 0.9662921348314607
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 3,
+              "fn": 0,
+              "precision": 0.9387755102040817,
+              "recall": 1.0,
+              "f1": 0.968421052631579
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 3
+          }
+        }
+      },
+      "input_sha256": "64560a9437683b3cb8d848e0def1e58ab860da26b3a46dba465ca73a37f5f64f",
+      "measured_snr_range_db": [
+        -1.9286549331065747e-15,
+        1.928654933106574e-15
+      ]
+    },
+    {
+      "trial_id": 11,
+      "condition": "0dB",
+      "snr_db": 0,
+      "seed": 2027,
+      "models": {
+        "cnn": {
+          "accuracy": 0.592391304347826,
+          "macro_f1": 0.5226451858188385,
+          "correct": 109,
+          "errors": 75,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              29,
+              0,
+              17
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 75,
+              "fn": 0,
+              "precision": 0.38016528925619836,
+              "recall": 1.0,
+              "f1": 0.5508982035928144
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 17,
+              "fp": 0,
+              "fn": 29,
+              "precision": 1.0,
+              "recall": 0.3695652173913043,
+              "f1": 0.5396825396825397
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 75
+          }
+        },
+        "svm": {
+          "accuracy": 0.9565217391304348,
+          "macro_f1": 0.9561904761904761,
+          "correct": 176,
+          "errors": 8,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              38,
+              8,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              46
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 38,
+              "fp": 0,
+              "fn": 8,
+              "precision": 1.0,
+              "recall": 0.8260869565217391,
+              "f1": 0.9047619047619048
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 8,
+              "fn": 0,
+              "precision": 0.8518518518518519,
+              "recall": 1.0,
+              "f1": 0.92
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 8
+          }
+        }
+      },
+      "input_sha256": "0d4a7e5786a82c70dd1bcb2309f1eceb24adeb27cd4279160d26812131616540",
+      "measured_snr_range_db": [
+        -1.9286549331065747e-15,
+        1.928654933106574e-15
+      ]
+    },
+    {
+      "trial_id": 12,
+      "condition": "0dB",
+      "snr_db": 0,
+      "seed": 2028,
+      "models": {
+        "cnn": {
+          "accuracy": 0.5706521739130435,
+          "macro_f1": 0.4946724155020319,
+          "correct": 105,
+          "errors": 79,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              33,
+              0,
+              13
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 79,
+              "fn": 0,
+              "precision": 0.368,
+              "recall": 1.0,
+              "f1": 0.5380116959064327
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 13,
+              "fp": 0,
+              "fn": 33,
+              "precision": 1.0,
+              "recall": 0.2826086956521739,
+              "f1": 0.4406779661016949
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 79
+          }
+        },
+        "svm": {
+          "accuracy": 0.9836956521739131,
+          "macro_f1": 0.9836918400748188,
+          "correct": 181,
+          "errors": 3,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              44,
+              2,
+              0
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              45
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 44,
+              "fp": 1,
+              "fn": 2,
+              "precision": 0.9777777777777777,
+              "recall": 0.9565217391304348,
+              "f1": 0.967032967032967
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 2,
+              "fn": 0,
+              "precision": 0.9583333333333334,
+              "recall": 1.0,
+              "f1": 0.9787234042553191
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 45,
+              "fp": 0,
+              "fn": 1,
+              "precision": 1.0,
+              "recall": 0.9782608695652174,
+              "f1": 0.989010989010989
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 3
+          }
+        }
+      },
+      "input_sha256": "e629c673130ff31461a60e4d9697745e02f131d72d6b84ac93a905f73ba10c8b",
+      "measured_snr_range_db": [
+        -1.9286549331065747e-15,
+        1.928654933106574e-15
+      ]
+    },
+    {
+      "trial_id": 13,
+      "condition": "-5dB",
+      "snr_db": -5,
+      "seed": 2026,
+      "models": {
+        "cnn": {
+          "accuracy": 0.5,
+          "macro_f1": 0.375,
+          "correct": 92,
+          "errors": 92,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 92,
+              "fn": 0,
+              "precision": 0.3333333333333333,
+              "recall": 1.0,
+              "f1": 0.5
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 92
+          }
+        },
+        "svm": {
+          "accuracy": 0.07608695652173914,
+          "macro_f1": 0.08561224489795918,
+          "correct": 14,
+          "errors": 170,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              3,
+              0,
+              0,
+              43
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              35,
+              0,
+              11
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 3,
+              "fp": 0,
+              "fn": 43,
+              "precision": 1.0,
+              "recall": 0.06521739130434782,
+              "f1": 0.12244897959183673
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 81,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 46,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 11,
+              "fp": 43,
+              "fn": 35,
+              "precision": 0.2037037037037037,
+              "recall": 0.2391304347826087,
+              "f1": 0.22
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 3,
+            "fp": 43,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.9347826086956522,
+            "fault_type_confusions": 127
+          }
+        }
+      },
+      "input_sha256": "43cff1e986e7305dbf279afc58a7d91d91be106bc698d9732605c704124910d7",
+      "measured_snr_range_db": [
+        -5.000000000000002,
+        -4.999999999999998
+      ]
+    },
+    {
+      "trial_id": 14,
+      "condition": "-5dB",
+      "snr_db": -5,
+      "seed": 2027,
+      "models": {
+        "cnn": {
+          "accuracy": 0.5,
+          "macro_f1": 0.375,
+          "correct": 92,
+          "errors": 92,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 92,
+              "fn": 0,
+              "precision": 0.3333333333333333,
+              "recall": 1.0,
+              "f1": 0.5
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 92
+          }
+        },
+        "svm": {
+          "accuracy": 0.06521739130434782,
+          "macro_f1": 0.07083333333333333,
+          "correct": 12,
+          "errors": 172,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              2,
+              0,
+              0,
+              44
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              36,
+              0,
+              10
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 2,
+              "fp": 0,
+              "fn": 44,
+              "precision": 1.0,
+              "recall": 0.043478260869565216,
+              "f1": 0.08333333333333333
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 82,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 46,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 10,
+              "fp": 44,
+              "fn": 36,
+              "precision": 0.18518518518518517,
+              "recall": 0.21739130434782608,
+              "f1": 0.2
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 2,
+            "fp": 44,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.9565217391304348,
+            "fault_type_confusions": 128
+          }
+        }
+      },
+      "input_sha256": "b6aa09a17342ca89e0bd0461b4ef788d12118095515a7dae0749a6aeb104bd7f",
+      "measured_snr_range_db": [
+        -5.000000000000002,
+        -4.999999999999998
+      ]
+    },
+    {
+      "trial_id": 15,
+      "condition": "-5dB",
+      "snr_db": -5,
+      "seed": 2028,
+      "models": {
+        "cnn": {
+          "accuracy": 0.5,
+          "macro_f1": 0.375,
+          "correct": 92,
+          "errors": 92,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              46,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 46,
+              "fp": 0,
+              "fn": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 46,
+              "fp": 92,
+              "fn": 0,
+              "precision": 0.3333333333333333,
+              "recall": 1.0,
+              "f1": 0.5
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 0,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 46,
+            "fp": 0,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.0,
+            "fault_type_confusions": 92
+          }
+        },
+        "svm": {
+          "accuracy": 0.08152173913043478,
+          "macro_f1": 0.10056599959571458,
+          "correct": 15,
+          "errors": 169,
+          "total": 184,
+          "confusion_matrix": [
+            [
+              5,
+              0,
+              0,
+              41
+            ],
+            [
+              0,
+              0,
+              46,
+              0
+            ],
+            [
+              0,
+              46,
+              0,
+              0
+            ],
+            [
+              0,
+              36,
+              0,
+              10
+            ]
+          ],
+          "per_class": [
+            {
+              "label": 0,
+              "state": "正常",
+              "support": 46,
+              "tp": 5,
+              "fp": 0,
+              "fn": 41,
+              "precision": 1.0,
+              "recall": 0.10869565217391304,
+              "f1": 0.19607843137254902
+            },
+            {
+              "label": 1,
+              "state": "内圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 82,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 2,
+              "state": "外圈故障",
+              "support": 46,
+              "tp": 0,
+              "fp": 46,
+              "fn": 46,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            {
+              "label": 3,
+              "state": "滚动体故障",
+              "support": 46,
+              "tp": 10,
+              "fp": 41,
+              "fn": 36,
+              "precision": 0.19607843137254902,
+              "recall": 0.21739130434782608,
+              "f1": 0.20618556701030927
+            }
+          ],
+          "normal_vs_fault": {
+            "tn": 5,
+            "fp": 41,
+            "fn": 0,
+            "tp": 138,
+            "fault_recall": 1.0,
+            "normal_false_alarm_rate": 0.8913043478260869,
+            "fault_type_confusions": 128
+          }
+        }
+      },
+      "input_sha256": "110e28a666afceeeeab9b932536b8a9bf720176cb9afbecda03d3add9412daf0",
+      "measured_snr_range_db": [
+        -5.0000000000000036,
+        -4.999999999999998
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "condition": "original",
+      "model": "cnn",
+      "noise_draws": 1,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "original",
+      "model": "svm",
+      "noise_draws": 1,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "20dB",
+      "model": "cnn",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "20dB",
+      "model": "svm",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "10dB",
+      "model": "cnn",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "10dB",
+      "model": "svm",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "accuracy_min": 1.0,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 1.0,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "5dB",
+      "model": "cnn",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.9347826086956522,
+      "accuracy_std": 0.007685943273766802,
+      "accuracy_min": 0.9293478260869565,
+      "accuracy_max": 0.9456521739130435,
+      "macro_f1_mean": 0.9336063827609875,
+      "macro_f1_std": 0.00805819484595538,
+      "macro_f1_min": 0.9279083785412899,
+      "macro_f1_max": 0.9450023912003825,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 0.7391304347826088,
+      "recall_class_3_mean": 1.0
+    },
+    {
+      "condition": "5dB",
+      "model": "svm",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.9981884057971014,
+      "accuracy_std": 0.002561981091255618,
+      "accuracy_min": 0.9945652173913043,
+      "accuracy_max": 1.0,
+      "macro_f1_mean": 0.9981881917365788,
+      "macro_f1_std": 0.002562283818549853,
+      "macro_f1_min": 0.9945645752097365,
+      "macro_f1_max": 1.0,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 0.9927536231884058
+    },
+    {
+      "condition": "0dB",
+      "model": "cnn",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.5815217391304347,
+      "accuracy_std": 0.00887496283617093,
+      "accuracy_min": 0.5706521739130435,
+      "accuracy_max": 0.592391304347826,
+      "macro_f1_mean": 0.5087876985164049,
+      "macro_f1_std": 0.011421290463312346,
+      "macro_f1_min": 0.4946724155020319,
+      "macro_f1_max": 0.5226451858188385,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 0.0,
+      "recall_class_3_mean": 0.3260869565217391
+    },
+    {
+      "condition": "0dB",
+      "model": "svm",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.9746376811594203,
+      "accuracy_std": 0.012809905456278038,
+      "accuracy_min": 0.9565217391304348,
+      "accuracy_max": 0.9836956521739131,
+      "macro_f1_mean": 0.9745202043770184,
+      "macro_f1_std": 0.012961076277300842,
+      "macro_f1_min": 0.9561904761904761,
+      "macro_f1_max": 0.9836918400748188,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 0.9057971014492754,
+      "recall_class_2_mean": 1.0,
+      "recall_class_3_mean": 0.9927536231884058
+    },
+    {
+      "condition": "-5dB",
+      "model": "cnn",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.5,
+      "accuracy_std": 0.0,
+      "accuracy_min": 0.5,
+      "accuracy_max": 0.5,
+      "macro_f1_mean": 0.375,
+      "macro_f1_std": 0.0,
+      "macro_f1_min": 0.375,
+      "macro_f1_max": 0.375,
+      "recall_class_0_mean": 1.0,
+      "recall_class_1_mean": 1.0,
+      "recall_class_2_mean": 0.0,
+      "recall_class_3_mean": 0.0
+    },
+    {
+      "condition": "-5dB",
+      "model": "svm",
+      "noise_draws": 3,
+      "windows_per_draw": 184,
+      "accuracy_mean": 0.07427536231884059,
+      "accuracy_std": 0.006778364831112214,
+      "accuracy_min": 0.06521739130434782,
+      "accuracy_max": 0.08152173913043478,
+      "macro_f1_mean": 0.0856705259423357,
+      "macro_f1_std": 0.012138380130194094,
+      "macro_f1_min": 0.07083333333333333,
+      "macro_f1_max": 0.10056599959571458,
+      "recall_class_0_mean": 0.07246376811594203,
+      "recall_class_1_mean": 0.0,
+      "recall_class_2_mean": 0.0,
+      "recall_class_3_mean": 0.2246376811594203
+    }
+  ],
+  "clean_load_audit": [
+    {
+      "load_hp": 0,
+      "split": "train",
+      "data_role": "已参与训练",
+      "model": "cnn",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 0,
+      "split": "train",
+      "data_role": "已参与训练",
+      "model": "svm",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 1,
+      "split": "train",
+      "data_role": "已参与训练",
+      "model": "cnn",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 1,
+      "split": "train",
+      "data_role": "已参与训练",
+      "model": "svm",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 2,
+      "split": "val",
+      "data_role": "已参与验证选择",
+      "model": "cnn",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 2,
+      "split": "val",
+      "data_role": "已参与验证选择",
+      "model": "svm",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 3,
+      "split": "test",
+      "data_role": "复用的测试划分",
+      "model": "cnn",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    },
+    {
+      "load_hp": 3,
+      "split": "test",
+      "data_role": "复用的测试划分",
+      "model": "svm",
+      "windows": 184,
+      "correct": 184,
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "new_independent_test": false
+    }
+  ],
+  "detailed_case_trial_id": 13,
+  "unique_original_test_windows": 184,
+  "original_test_records": 4,
+  "training_performed": false,
+  "new_independent_data": false,
+  "checks": {
+    "frozen_before_predictions": true,
+    "same_noisy_input_for_both_models": true,
+    "per_window_snr_verified": true,
+    "original_predictions_match_lesson07": true,
+    "cnn_weights_unchanged": true,
+    "previous_artifacts_unchanged": true,
+    "train_val_test_record_groups_disjoint": true
+  },
+  "versions": {
+    "python": "3.14.4",
+    "numpy": "2.4.4",
+    "torch": "2.12.0+cpu",
+    "sklearn": "1.8.0",
+    "matplotlib": "3.10.9"
+  }
+}

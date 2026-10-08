@@ -1,0 +1,16 @@
+{
+  "dataset": "data/processed/lesson03/dataset.npz",
+  "cnn_folder": "outputs/lesson06",
+  "baseline_model": "outputs/lesson04/baseline-model.joblib",
+  "labels": [0, 1, 2, 3],
+  "sampling_rate_hz": 12000,
+  "window_points": 1024,
+  "batch_size": 32,
+  "device": "cpu",
+  "torch_threads": 2,
+  "evaluation_split": "test",
+  "prediction_rule": "saved CNN logits argmax; saved SVM pipeline.predict; no tuning",
+  "zero_division": 0,
+  "known_test_reuse": "The same 3 HP split was already evaluated for the baseline in lesson04. This is a frozen-model comparison, not a fresh independent dataset.",
+  "teaching_demo_confusion_matrix": [[8,1,1,0],[1,7,0,2],[0,1,9,0],[1,0,2,7]]
+}

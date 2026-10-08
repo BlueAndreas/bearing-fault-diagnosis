@@ -1,0 +1,15 @@
+{
+  "dataset": "data/processed/lesson03/dataset.npz",
+  "label_map": "data/processed/lesson03/label-map.json",
+  "sampling_rate_hz": 12000,
+  "window_points": 1024,
+  "feature_names": ["rms", "std", "absolute_peak", "peak_to_peak", "mean_absolute", "crest_factor", "skewness", "pearson_kurtosis"],
+  "random_seed": 42,
+  "selection_rule": "validation macro-F1 descending, validation accuracy descending, then original candidate order",
+  "candidates": [
+    {"name": "SVM-C1", "family": "svm", "parameters": {"C": 1.0, "kernel": "rbf", "gamma": "scale"}},
+    {"name": "SVM-C10", "family": "svm", "parameters": {"C": 10.0, "kernel": "rbf", "gamma": "scale"}},
+    {"name": "RF-depth6", "family": "random_forest", "parameters": {"n_estimators": 200, "max_depth": 6, "min_samples_leaf": 2}},
+    {"name": "RF-unlimited", "family": "random_forest", "parameters": {"n_estimators": 200, "max_depth": null, "min_samples_leaf": 2}}
+  ]
+}

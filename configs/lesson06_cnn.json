@@ -1,0 +1,17 @@
+{
+  "dataset": "data/processed/lesson03/dataset.npz",
+  "window_points": 1024,
+  "sampling_rate_hz": 12000,
+  "architecture": {"channels": [16, 32], "kernels": [9, 5]},
+  "batch_size": 32,
+  "epochs": 30,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 42,
+  "device": "cpu",
+  "torch_threads": 2,
+  "num_workers": 0,
+  "drop_last": false,
+  "checkpoint_selection": "highest validation macro-F1; then lowest validation loss; then earliest epoch",
+  "test_evaluation": "deferred to lesson07; do not load test arrays in lesson06"
+}
