@@ -1,0 +1,34 @@
+# Downloaded CWRU recordings and locally generated datasets
+/data/
+/12k Drive End Bearing Fault Data/
+*.mat
+*.npz
+
+# Training artifacts, checkpoints, diagnosis uploads and exported reports
+/outputs/
+*.pt
+*.pth
+*.joblib
+
+# Local Python environment and tooling
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# Credentials and personal material
+.env
+.env.*
+*.pem
+*.key
+*.docx
+*.pdf
+*我的学习记录*
+*面试*
+*备份*/
