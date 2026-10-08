@@ -1,0 +1,16 @@
+{
+  "host": "127.0.0.1",
+  "port": 8879,
+  "sampling_rate_hz": 12000,
+  "window_points": 1024,
+  "allowed_source_rates": [12000, 48000],
+  "max_file_bytes": 25165824,
+  "max_source_points": 2000000,
+  "max_duration_seconds": 20,
+  "batch_size": 32,
+  "dataset": "data/processed/lesson03/dataset.npz",
+  "cnn_folder": "outputs/lesson06",
+  "svm_file": "outputs/lesson04/baseline-model.joblib",
+  "saved_runs": "outputs/lesson09/runs",
+  "scope": "local offline CWRU four-class prototype; no training, live sensor, unknown-fault detector, confidence calibration or industrial validation"
+}
